@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { MeshReflectorMaterial, Grid, Sparkles } from '@react-three/drei';
+import { MeshReflectorMaterial, Grid } from '@react-three/drei';
 import { mergeBufferGeometries as mergeGeometries } from 'three-stdlib';
 import { Avatar, LOOKS, TITAN } from './Avatar';
 import { Model } from './Asset';
@@ -142,6 +142,18 @@ function Station({ a }) {
   );
 }
 
+// Partículas de polvo luminoso (ambiente). Material estándar de puntos: sin shaders propios.
+function Dust() {
+  const ref = useRef();
+  const geo = useMemo(() => {
+    const g = new THREE.BufferGeometry(), a = new Float32Array(150 * 3);
+    for (let i = 0; i < 150; i++) { a[i * 3] = (Math.sin(i * 12.9) * 0.5) * 28; a[i * 3 + 1] = 0.5 + (Math.abs(Math.sin(i * 7.7))) * 8; a[i * 3 + 2] = (Math.sin(i * 4.1) * 0.5) * 22; }
+    g.setAttribute('position', new THREE.BufferAttribute(a, 3)); return g;
+  }, []);
+  useFrame(({ clock }) => { if (ref.current) { ref.current.rotation.y = clock.elapsedTime * 0.01; ref.current.position.y = Math.sin(clock.elapsedTime * 0.3) * 0.25; } });
+  return <points ref={ref} geometry={geo}><pointsMaterial size={0.07} color="#9fb4ff" transparent opacity={0.65} depthWrite={false} blending={THREE.AdditiveBlending} sizeAttenuation /></points>;
+}
+
 function Floor1() {
   const hq = useStore((s) => s.quality === 'high');
   return (
@@ -149,8 +161,8 @@ function Floor1() {
       <mesh position={[0, -0.15, 0]} material={M.floor1}><boxGeometry args={[W, 0.3, D]} /></mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.003, 0]}>
         <planeGeometry args={[W, D]} />
-        {hq ? <MeshReflectorMaterial map={floorMarble} color="#aab4ff" resolution={512} blur={[300, 100]} mixBlur={1} mixStrength={9} mirror={0.6} roughness={0.55} depthScale={0} metalness={0.4} />
-            : <meshStandardMaterial map={floorMarble} color="#aab4ff" metalness={0.5} roughness={0.2} />}
+        {hq ? <MeshReflectorMaterial map={floorMarble} color="#aab4ff" resolution={512} blur={[300, 100]} mixBlur={1} mixStrength={9} mirror={0.6} roughness={0.55} depthScale={0} metalness={0.4} envMapIntensity={0.35} />
+            : <meshStandardMaterial map={floorMarble} color="#aab4ff" metalness={0.5} roughness={0.3} envMapIntensity={0.35} />}
       </mesh>
       {/* líneas de guía en el suelo */}
       <Strip position={[0, 0.012, 3]} size={[0.07, 0.01, 18]} />
@@ -168,7 +180,7 @@ function Floor1() {
         <Screen w={4.2} h={3.4} res={256} draw={drawAgentBars} fps={1} position={[5.4, 0, 0]} glow="violet" />
       </group>
       <Strip position={[0, 0.9, -11.78]} size={[16, 0.05, 0.04]} />
-      <Sparkles count={70} scale={[26, 8, 20]} position={[0, 4.5, 0]} size={3} speed={0.25} color="#7fa4ff" opacity={0.7} />
+      <Dust />
       {/* Núcleos de IA */}
       <AICore position={[-4.5, 0, -9]} />
       <AICore position={[4.5, 0, -9]} />

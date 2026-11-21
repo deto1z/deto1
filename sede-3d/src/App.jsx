@@ -32,8 +32,8 @@ function Scene() {
         <spotLight position={[0, 9.6, 2]} angle={1.0} penumbra={1} intensity={150} distance={22} color="#8fb0ff" castShadow shadow-mapSize={[1024, 1024]} shadow-bias={-0.0006} />
       </>}
       <Environment resolution={64}>
-        <Lightformer form="rect" intensity={2.5} color="#2f6bff" position={[0, 6, 14]} scale={[18, 4, 1]} />
-        <Lightformer form="rect" intensity={2.5} color="#9b2bff" position={[0, 6, -14]} scale={[18, 4, 1]} />
+        <Lightformer form="rect" intensity={1.6} color="#2f6bff" position={[0, 6, 14]} scale={[18, 4, 1]} />
+        <Lightformer form="rect" intensity={1.6} color="#9b2bff" position={[0, 6, -14]} scale={[18, 4, 1]} />
         <Lightformer form="ring" intensity={2} color="#ffffff" position={[0, 14, 0]} rotation-x={Math.PI / 2} scale={8} />
       </Environment>
       <Stars radius={260} depth={60} count={q === 'low' ? 800 : 3000} factor={5} fade speed={0.6} />
@@ -57,7 +57,7 @@ export default function App() {
   return (
     <div className="app">
       <Canvas shadows={q === 'low' ? false : 'soft'} key={q === 'low' ? 'l' : 'h'} dpr={q === 'low' ? [1, 1.25] : q === 'medium' ? [1, 1.5] : [1, 2]} gl={{ antialias: q !== 'high', powerPreference: 'high-performance', toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
-        onCreated={({ gl, scene }) => { if (new URLSearchParams(location.search).has('debug')) window.__gl = gl; window.__scene = scene; }} camera={{ position: [36, 13, 40], fov: 55 }} onPointerMissed={() => useStore.getState().select(null)}>
+        onCreated={({ gl, scene, camera }) => { if (new URLSearchParams(location.search).has('debug')) window.__gl = gl; window.__scene = scene; window.__cam = camera; window.__THREE = THREE; }} camera={{ position: [36, 13, 40], fov: 55 }} onPointerMissed={() => useStore.getState().select(null)}>
         <Scene />
       </Canvas>
       <Intro />
