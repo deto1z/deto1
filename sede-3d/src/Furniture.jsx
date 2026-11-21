@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { M } from './materials';
 import { Model } from './Asset';
-import { Screen, drawStats, drawNews, drawAgentBars, drawStation } from './Screen';
+import { Screen, drawStats, drawNews, drawAgentBars, STATION_SCREENS } from './Screen';
 import { getAgentView } from './store';
 
 const rr = (a, b) => Math.sin(a * 91.7 + b * 13.1);
@@ -148,6 +148,7 @@ function Monitor({ draw, tilt = 0, glow, w = 0.98, h = 0.56 }) {
 /* Estación gaming/streaming. Local: el agente se sienta en +x y mira hacia -x (monitores). */
 export function GamingDesk({ agent }) {
   const accent = agent?.color ?? '#2f7bff';
+  const screens = STATION_SCREENS[agent?.id] ?? [drawNews, drawStats, drawAgentBars];
   return (
     <group>
       {/* tablero de madera oscura + marco metálico */}
@@ -167,7 +168,7 @@ export function GamingDesk({ agent }) {
       {/* tres monitores en arco */}
       {[-1, 0, 1].map((k, i) => (
         <group key={k} position={[-0.5 + Math.abs(k) * 0.07, 1.25, k * 0.96]} rotation={[0, Math.PI / 2 + k * 0.33, 0]}>
-          <Monitor draw={[drawNews, drawStats, drawAgentBars][i]} glow={i === 1 ? 'violet' : 'blue'} />
+          <Monitor draw={screens[i]} glow={i === 1 ? 'violet' : 'blue'} />
           {k === 0 && <group position={[0, 0.32, 0]}><Cyl p={[0, 0, 0]} h={0.025} r={[0.02, 0.02]} m={M.black} rot={[Math.PI / 2, 0, 0]} /><mesh position={[0, 0, 0.015]} material={M.led}><sphereGeometry args={[0.006, 6, 6]} /></mesh></group>}
         </group>
       ))}
@@ -212,9 +213,9 @@ export function ExecDesk() {
       <B p={[0, 0.08, 0.7]} s={[3.5, 0.02, 0.02]} m={M.stripBV2} />
       <B p={[0, 0.74, 0.74]} s={[3.7, 0.02, 0.02]} m={M.stripBV} />
       {/* triple monitor ejecutivo de cara al CEO */}
-      {[-1.2, 0, 1.2].map((x, i) => (
-        <group key={x} position={[x, 1.28, -0.45]} rotation={[0, Math.PI - x * 0.12, 0]}>
-          <Monitor draw={[drawAgentBars, drawStats, drawNews][i]} glow="violet" w={1.1} h={0.62} />
+      {[-1.55, 1.55].map((x, i) => (
+        <group key={x} position={[x, 1.15, -0.3]} rotation={[0, Math.PI - x * 0.28, 0]}>
+          <Monitor draw={STATION_SCREENS['titan-x'][i === 0 ? 0 : 2]} glow="violet" w={1.05} h={0.6} />
         </group>
       ))}
       <mesh position={[0.1, 0.835, 0.12]} material={M.black}><boxGeometry args={[0.62, 0.012, 0.22]} /></mesh>

@@ -5,7 +5,8 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { RiggedAvatar, RIG_ACTIONS } from './RiggedAvatar';
 import { Chair } from './Furniture';
-import { CAST } from './characters';
+import { LOOKS3D, TITAN } from './characters';
+import { AGENTS } from './constants';
 import { makeCanvasTexture, neonText } from './textures';
 import './styles.css';
 
@@ -40,7 +41,7 @@ function Slot({ c, x, z, action }) {
 
 export default function Casting() {
   const params = new URLSearchParams(location.search), pick = params.has('pick');
-  const list = pick ? ALL12 : CAST;
+  const list = pick ? ALL12 : [TITAN, ...AGENTS].map((a) => ({ ...a, file: LOOKS3D[a.id].file, tweaks: LOOKS3D[a.id].tweaks }));
   const [action, setAction] = useState('idle');
   const cols = pick ? 6 : 7;
   return (

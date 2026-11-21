@@ -39,30 +39,35 @@ export const RIG_ACTIONS = {
   talkStand: { clip: 'Idle_Talking_Loop',       seated: false, label: 'Hablar (de pie)' },
 };
 
-const tmpQ = new THREE.Quaternion(), tmpQ2 = new THREE.Quaternion(), tmpV = new THREE.Vector3(), AX = new THREE.Vector3(1, 0, 0), AY = new THREE.Vector3(0, 1, 0);
+const tmpQ = new THREE.Quaternion(), tmpQ2 = new THREE.Quaternion(), qRoot = new THREE.Quaternion(), tmpV = new THREE.Vector3(), tmpP = new THREE.Vector3(), tmpS = new THREE.Vector3(),
+  tmpAx = new THREE.Vector3(), AX = new THREE.Vector3(1, 0, 0), AY = new THREE.Vector3(0, 1, 0), AZ = new THREE.Vector3(0, 0, 1);
 
-function worldRotate(bone, axis, angle) {            // añade una rotación en espacio mundo a un hueso (los hijos la heredan)
-  bone.parent.updateWorldMatrix(true, false);
-  bone.updateWorldMatrix(false, false);
-  bone.getWorldQuaternion(tmpQ);
-  tmpQ2.setFromAxisAngle(axis, angle).multiply(tmpQ);
-  bone.parent.getWorldQuaternion(tmpQ).invert();
-  bone.quaternion.copy(tmpQ.multiply(tmpQ2));
+// Añade una rotación (eje en espacio del personaje) a un hueso; los hijos la heredan.
+function addRot(bone, axis, angle) {
+  bone.matrixWorld.decompose(tmpP, tmpQ, tmpS);
+  tmpQ2.setFromAxisAngle(tmpAx.copy(axis).applyQuaternion(qRoot), angle).multiply(tmpQ);
+  bone.parent.matrixWorld.decompose(tmpP, tmpQ, tmpS);
+  bone.quaternion.copy(tmpQ.invert().multiply(tmpQ2));
   bone.updateMatrixWorld(true);
 }
 
-export function RiggedAvatar({ file, tweaks, action = 'idle', seatTop = 0.55, seatBack = 0, position, rotation, phase = 0, scale = 1, onReady }) {
+const ONE_SHOT = { Sitting_Enter: true, Sitting_Exit: true };
+
+export function RiggedAvatar({ file, tweaks, action = 'idle', seatTop = 0.55, sitOffset = [0, 0, 0], position, rotation, phase = 0, scale = 1, walkSpeed = 1 }) {
   const char = useGLTF(CHAR_FILE(file)), anim = useGLTF(ANIM_FILE);
   const rig = useMemo(() => {
     const root = SkeletonUtils.clone(char.scene);
     const src = SkeletonUtils.clone(anim.scene);
-    // materiales propios (para teñir por personaje) y sin recorte por frustum
     const mats = new Map();
     root.traverse((o) => {
       if (!o.isMesh) return;
       o.frustumCulled = false; o.castShadow = true; o.receiveShadow = true;
       const m = o.material;
-      if (!mats.has(m)) { const c = m.clone(); mats.set(m, c); const t = tweaks?.[m.name]; if (t) { if (t.color) c.color.set(t.color); if (t.emissive) { c.emissive = new THREE.Color(t.emissive); c.emissiveIntensity = t.emissiveIntensity ?? 1; } if (t.metalness != null) c.metalness = t.metalness; if (t.roughness != null) c.roughness = t.roughness; } }
+      if (!mats.has(m)) {
+        const c = m.clone(); mats.set(m, c); const t = tweaks?.[m.name];
+        c.roughness = Math.min(0.85, Math.max(c.roughness ?? 0.6, 0.55)); c.metalness = Math.min(c.metalness ?? 0, 0.1); c.envMapIntensity = 0.5;
+        if (t) { if (t.color) c.color.set(t.color); if (t.emissive) { c.emissive = new THREE.Color(t.emissive); c.emissiveIntensity = t.emissiveIntensity ?? 1; } if (t.metalness != null) c.metalness = t.metalness; if (t.roughness != null) c.roughness = t.roughness; }
+      }
       o.material = mats.get(m);
     });
     root.updateMatrixWorld(true); src.updateMatrixWorld(true);
@@ -77,51 +82,67 @@ export function RiggedAvatar({ file, tweaks, action = 'idle', seatTop = 0.55, se
     const clips = anim.animations.map((c) => { const k = c.clone(); k.tracks = k.tracks.filter((t) => !t.name.startsWith('root.')); return k; });
     const mixer = new THREE.AnimationMixer(src);
     const actions = {}; clips.forEach((c) => { actions[c.name] = mixer.clipAction(c); });
-    const bones = (n) => root.getObjectByName(san(n));
-    return { root, src, pairs, sHips, tHips, sHipsRest, tHipsRest, k: tHipsRest.y / sHipsRest.y, mixer, actions, cur: null, bones, sitY: null, tHipsParent: tHips.parent };
+    const bones = {}; ['UpperArm.L', 'UpperArm.R', 'LowerArm.L', 'LowerArm.R', 'Hand.L', 'Hand.R', 'Head', 'Neck', 'Chest'].forEach((n) => { bones[n] = root.getObjectByName(san(n)); });
+    return { root, src, pairs, sHips, tHips, sHipsRest, tHipsRest, k: tHipsRest.y / sHipsRest.y, mixer, actions, cur: null, bones, tHipsParent: tHips.parent };
   }, [char, anim, tweaks]);
 
-  useEffect(() => { onReady?.(rig); }, [rig, onReady]);
+  const st = useRef({ clip: null, seated: false, queued: null });
+  const play = (name, loop, fade = 0.35) => {
+    const next = rig.actions[name]; if (!next) return;
+    next.reset(); next.enabled = true; next.setEffectiveWeight(1);
+    next.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, loop ? Infinity : 1); next.clampWhenFinished = !loop; next.fadeIn(fade).play();
+    if (rig.cur && rig.cur !== next) rig.cur.fadeOut(fade);
+    rig.cur = next; st.current.clip = name;
+    if (name === 'Walk_Loop' || name === 'Walk_Formal_Loop') next.timeScale = walkSpeed; else next.timeScale = 1;
+    if (loop) next.time = (phase * 0.37) % next.getClip().duration;
+  };
 
-  const state = useRef({ act: null });
   useFrame(({ clock }, dtRaw) => {
-    const dt = Math.min(dtRaw, 0.1), t = clock.elapsedTime + phase;
+    const dt = Math.min(dtRaw, 0.1), t = clock.elapsedTime + phase, S = st.current;
     const A = RIG_ACTIONS[action] ?? RIG_ACTIONS.idle;
-    if (state.current.act !== A.clip) {
-      const next = rig.actions[A.clip]; if (next) { next.reset().setLoop(THREE.LoopRepeat, Infinity).fadeIn(0.45).play(); if (rig.cur) rig.cur.fadeOut(0.45); rig.cur = next; next.time = (phase * 0.37) % next.getClip().duration; }
-      state.current.act = A.clip;
+    // selección de animación con transiciones de sentarse / levantarse
+    if (S.target !== action) {
+      S.target = action;
+      if (S.first === undefined) { S.first = false; S.seated = A.seated; play(A.clip, true, 0.01); }
+      else if (A.seated && !S.seated) { S.seated = true; S.queued = A.clip; play('Sitting_Enter', false); }
+      else if (!A.seated && S.seated) { S.seated = false; S.queued = A.clip; play('Sitting_Exit', false); }
+      else play(A.clip, true);
     }
+    if (S.queued && ONE_SHOT[S.clip] && rig.cur && rig.cur.time >= rig.cur.getClip().duration - 0.06) { const q = S.queued; S.queued = null; play(q, true, 0.25); }
     rig.mixer.update(dt); rig.src.updateMatrixWorld(true);
-    // 1) retarget por rotaciones de mundo
-    for (const { s, t: tb, sRest, tRest } of rig.pairs) {
-      s.getWorldQuaternion(tmpQ).multiply(sRest).multiply(tRest);       // (srcMundo · srcReposo⁻¹) · tgtReposo
-      // Nota: el orden delta = srcMundo · srcReposo⁻¹ se aplica por la izquierda de tgtReposo
-      tb.parent.updateWorldMatrix(true, false);
-      tb.parent.getWorldQuaternion(tmpQ2).invert();
+    rig.root.updateWorldMatrix(true, false); rig.root.updateMatrixWorld(true);
+    rig.root.getWorldQuaternion(qRoot);
+    const qInv = tmpQ2.copy(qRoot).invert();       // (se reutiliza abajo con copias)
+    const qRootInv = qInv.clone();
+    // cadera: posición (relativa a la animación, escalada) y rotación; después, el resto de huesos en orden jerárquico
+    for (let i = 0; i < rig.pairs.length; i++) {
+      const { s, t: tb, sRest, tRest } = rig.pairs[i];
+      s.matrixWorld.decompose(tmpP, tmpQ, tmpS);
+      tmpQ.multiply(sRest).multiply(tRest);                                   // rotación deseada (espacio del personaje)
+      if (i === 0) {
+        tmpV.copy(tmpP).sub(rig.sHipsRest).multiplyScalar(rig.k).add(rig.tHipsRest);
+        if (S.seated || seatTop > 0) { /* el desplazamiento de la animación ya incluye la altura de sentado */ }
+        if (S.seated) tmpV.add(tmpAx.set(...sitOffset));
+        rig.root.localToWorld(tmpV);
+        tb.position.copy(rig.tHipsParent.worldToLocal(tmpV));
+      }
+      tb.parent.matrixWorld.decompose(tmpP, tmpQ2, tmpS);
+      tmpQ2.premultiply(qRootInv).invert();
       tb.quaternion.copy(tmpQ2.multiply(tmpQ));
-      tb.updateMatrixWorld(true);
+      tb.updateMatrix(); tb.matrixWorld.multiplyMatrices(tb.parent.matrixWorld, tb.matrix);
     }
-    // 2) desplazamiento de la cadera (sentarse, rebote al caminar), escalado a la altura del personaje
-    rig.sHips.getWorldPosition(tmpV).sub(rig.sHipsRest).multiplyScalar(rig.k).add(rig.tHipsRest);
-    rig.root.updateWorldMatrix(true, false); rig.tHipsParent.updateWorldMatrix(true, false);
-    rig.root.localToWorld(tmpV);                                   // (espacio del personaje → mundo)
-    rig.tHips.position.copy(rig.tHipsParent.worldToLocal(tmpV));    // → espacio del hueso padre
-    if (A.seated) rig.tHips.position.z -= seatBack;
-    rig.tHips.updateMatrixWorld(true);
-    // 3) capas procedurales sobre la animación (escribir, mirar pantallas)
-    const L = rig.bones('UpperArm.L'), R = rig.bones('UpperArm.R'), LL = rig.bones('LowerArm.L'), RL = rig.bones('LowerArm.R'), H = rig.bones('Head'), N = rig.bones('Neck');
+    // capas procedurales (escribir, mirar pantallas)
+    const B = rig.bones;
     if (action === 'type') {
       const j1 = Math.sin(t * 17), j2 = Math.sin(t * 13 + 1.3);
-      worldRotate(L, AX, -0.75); worldRotate(R, AX, -0.75);
-      worldRotate(LL, AX, -0.55 + j1 * 0.05); worldRotate(RL, AX, -0.55 + j2 * 0.05);
-      worldRotate(N, AX, 0.18 + Math.sin(t * 0.7) * 0.03);
+      addRot(B['UpperArm.L'], AX, -0.35); addRot(B['UpperArm.R'], AX, -0.35);
+      addRot(B['LowerArm.L'], AX, -0.35 + j1 * 0.06); addRot(B['LowerArm.R'], AX, -0.35 + j2 * 0.06);
+      addRot(B['Hand.L'], AX, 0.25 + j2 * 0.12); addRot(B['Hand.R'], AX, 0.25 + j1 * 0.12);
+      addRot(B.Neck, AX, 0.16 + Math.sin(t * 0.7) * 0.03);
     } else if (action === 'look') {
-      worldRotate(N, AY, Math.sin(t * 0.7) * 0.5); worldRotate(H, AX, 0.08);
-      worldRotate(R, AX, -0.6); worldRotate(RL, AX, -0.5);
+      addRot(B.Neck, AY, Math.sin(t * 0.7) * 0.55); addRot(B.Head, AX, 0.06);
+      addRot(B['UpperArm.R'], AX, -0.3); addRot(B['LowerArm.R'], AX, -0.4);
     }
   });
-  const hipsOffset = 0;
-  return <group position={position} rotation={rotation} scale={scale} userData={{ noMerge: true }}><primitive object={rig.root} position={[0, hipsOffset, 0]} /></group>;
+  return <group position={position} rotation={rotation} scale={scale} userData={{ noMerge: true }}><primitive object={rig.root} /></group>;
 }
-
-useGLTF.preload && ['men_Suit'].forEach((n) => useGLTF.preload(CHAR_FILE(n)));

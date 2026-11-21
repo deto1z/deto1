@@ -19,6 +19,8 @@ export const useStore = create((set) => ({
   /* Estado REAL de los agentes. Lo alimentará el orquestador (WebSocket) en la Fase 4.
      { [id]: { status, task:{title, progress?:0..1}, alert?:string } }  — vacío = sin conectar */
   agentState: {},
+  placeOverride: 'auto',   // solo vista previa de diseño: 'auto' | 'desk' | 'meeting' | 'rest'
+  setPlace: (placeOverride) => set({ placeOverride }),
   setPhase: (phase) => set({ phase }),
   setMode: (mode) => set({ mode }),
   flyTo: (p) => set({ mode: 'orbit', goto: { ...p, id: Math.random() } }),

@@ -137,3 +137,81 @@ export const drawStation = (agent) => (ctx, w, h) => {
   ctx.font = `500 ${h * 0.14}px ${FONT}`; ctx.fillStyle = '#cdd6ff'; ctx.textAlign = 'center'; ctx.fillText(agent.role, w / 2, h * 0.66);
   ctx.font = `600 ${h * 0.11}px ${FONT}`; ctx.fillStyle = '#8e93ad'; ctx.fillText('● SIN CONECTAR', w / 2, h * 0.86);
 };
+
+/* ───── Pantallas temáticas por especialidad (contenido de DEMOSTRACIÓN, sin datos reales) ───── */
+const tag = (ctx, w, h) => demoTag(ctx, w, h);
+const head = (ctx, w, h, text, color) => neonText(ctx, text, w * 0.04, h * 0.08, h * 0.07, color, 10, 800, 'left');
+
+export const drawFootball = (ctx, w, h, t) => {            // VIRAL HUNTER · fútbol
+  const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#04230f'); g.addColorStop(1, '#06310f'); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 3; const x0 = w * 0.06, y0 = h * 0.18, pw = w * 0.88, ph = h * 0.62;
+  ctx.strokeRect(x0, y0, pw, ph); ctx.beginPath(); ctx.moveTo(w / 2, y0); ctx.lineTo(w / 2, y0 + ph); ctx.stroke();
+  ctx.beginPath(); ctx.arc(w / 2, y0 + ph / 2, ph * 0.16, 0, 7); ctx.stroke(); ctx.strokeRect(x0, y0 + ph * 0.28, pw * 0.14, ph * 0.44); ctx.strokeRect(x0 + pw * 0.86, y0 + ph * 0.28, pw * 0.14, ph * 0.44);
+  for (let i = 0; i < 10; i++) { const a = i * 0.9 + t * 0.4; ctx.fillStyle = i < 5 ? '#2ee6ff' : '#ff4fd8'; ctx.beginPath(); ctx.arc(w * (0.2 + 0.6 * (0.5 + 0.5 * Math.sin(a + i))), y0 + ph * (0.15 + 0.7 * (0.5 + 0.5 * Math.cos(a * 0.7 + i * 2))), h * 0.018, 0, 7); ctx.fill(); }
+  head(ctx, w, h, 'FÚTBOL · EN VIVO (demo)', '#25e08a');
+  ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(0, h * 0.86, w, h * 0.14); ctx.font = `600 ${h * 0.05}px ${FONT}`; ctx.textAlign = 'left'; ctx.fillStyle = '#eef';
+  const tick = '[ejemplo] Titular de tendencia · fuente · fecha · sin verificar      '; const off = (t * 60) % (w); ctx.fillText(tick + tick + tick, -off, h * 0.93); tag(ctx, w, h);
+};
+export const drawTrends = (ctx, w, h, t) => {              // VIRAL HUNTER · tendencias
+  bgGrad(ctx, w, h); head(ctx, w, h, 'TENDENCIAS', '#2ee6ff');
+  for (let i = 0; i < 6; i++) { const y = h * (0.2 + i * 0.12); ctx.fillStyle = 'rgba(120,80,255,.18)'; ctx.fillRect(w * 0.04, y, w * 0.92, h * 0.1);
+    ctx.fillStyle = '#2ee6ff'; ctx.font = `700 ${h * 0.05}px ${FONT}`; ctx.textAlign = 'left'; ctx.fillText('#' + (i + 1), w * 0.06, y + h * 0.065);
+    ctx.fillStyle = '#cdd6ff'; ctx.font = `500 ${h * 0.045}px ${FONT}`; ctx.fillText('[ejemplo] tema en tendencia', w * 0.16, y + h * 0.065);
+    ctx.fillStyle = 'rgba(100,120,255,.35)'; ctx.fillRect(w * 0.62, y + h * 0.03, w * 0.3 * (0.4 + 0.5 * Math.abs(Math.sin(i + t * 0.3))), h * 0.04); }
+  tag(ctx, w, h);
+};
+export const drawScript = (ctx, w, h, t) => {              // HOOK MASTER · guiones
+  ctx.fillStyle = '#0c0a1c'; ctx.fillRect(0, 0, w, h); head(ctx, w, h, 'GUION · GANCHOS', '#ff4fd8');
+  ctx.fillStyle = 'rgba(255,79,216,.15)'; ctx.fillRect(w * 0.04, h * 0.15, w * 0.92, h * 0.1); ctx.fillStyle = '#ff9bf0'; ctx.font = `700 ${h * 0.05}px ${FONT}`; ctx.textAlign = 'left'; ctx.fillText('GANCHO · 0:00–0:03', w * 0.06, h * 0.215);
+  for (let i = 0; i < 9; i++) { const y = h * (0.3 + i * 0.07); ctx.fillStyle = 'rgba(205,214,255,.22)'; ctx.fillRect(w * 0.06, y, w * (0.3 + 0.55 * Math.abs(Math.sin(i * 7.3))), h * 0.025); }
+  if (Math.floor(t * 2) % 2 === 0) { ctx.fillStyle = '#ff4fd8'; ctx.fillRect(w * 0.06 + w * 0.4, h * 0.3 + h * 0.07 * 4, 4, h * 0.035); }
+  ctx.fillStyle = '#8e93ad'; ctx.font = `500 ${h * 0.04}px ${FONT}`; ctx.fillText('Retención · títulos · intros (esperando órdenes)', w * 0.06, h * 0.95); tag(ctx, w, h);
+};
+export const drawDesign = (ctx, w, h, t) => {               // PIXEL QUEEN · portadas
+  ctx.fillStyle = '#120a26'; ctx.fillRect(0, 0, w, h); head(ctx, w, h, 'PORTADAS · MINIATURAS', '#b45bff');
+  for (let i = 0; i < 3; i++) { const x = w * (0.05 + i * 0.31), g = ctx.createLinearGradient(x, 0, x + w * 0.28, h); g.addColorStop(0, ['#2f7bff', '#ff4fd8', '#25e08a'][i]); g.addColorStop(1, '#2a1259');
+    ctx.fillStyle = g; ctx.fillRect(x, h * 0.16, w * 0.28, h * 0.36); ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.font = `900 ${h * 0.07}px ${FONT}`; ctx.textAlign = 'center'; ctx.fillText('TÍTULO', x + w * 0.14, h * 0.38); }
+  ['#2f7bff', '#9b2bff', '#ff4fd8', '#2ee6ff', '#ffc531', '#25e08a', '#ffffff', '#0b0d1a'].forEach((c, i) => { ctx.fillStyle = c; ctx.fillRect(w * (0.05 + i * 0.07), h * 0.6, w * 0.06, h * 0.07); });
+  for (let i = 0; i < 4; i++) { ctx.fillStyle = 'rgba(180,91,255,.25)'; ctx.fillRect(w * 0.05, h * (0.72 + i * 0.05), w * (0.5 + 0.4 * Math.abs(Math.sin(i * 2 + t * 0.2))) * 0.9, h * 0.035); }
+  tag(ctx, w, h);
+};
+export const drawVerify = (ctx, w, h, t) => {               // FILTER X · verificación
+  ctx.fillStyle = '#071410'; ctx.fillRect(0, 0, w, h); head(ctx, w, h, 'VERIFICACIÓN DE FUENTES', '#25e08a');
+  const nodes = [[0.5, 0.3], [0.2, 0.55], [0.5, 0.62], [0.8, 0.55], [0.35, 0.82], [0.68, 0.82]];
+  ctx.strokeStyle = 'rgba(37,224,138,.5)'; ctx.lineWidth = 2; [[0, 1], [0, 2], [0, 3], [1, 4], [2, 4], [2, 5], [3, 5]].forEach(([a, b]) => { ctx.beginPath(); ctx.moveTo(w * nodes[a][0], h * nodes[a][1]); ctx.lineTo(w * nodes[b][0], h * nodes[b][1]); ctx.stroke(); });
+  nodes.forEach(([x, y], i) => { ctx.fillStyle = i === 0 ? '#25e08a' : '#10301f'; ctx.strokeStyle = '#25e08a'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(w * x, h * y, h * 0.045, 0, 7); ctx.fill(); ctx.stroke(); });
+  ctx.fillStyle = '#25e08a'; ctx.font = `700 ${h * 0.06}px ${FONT}`; ctx.textAlign = 'center'; ctx.fillText('?', w * 0.5, h * 0.32);
+  ctx.fillStyle = '#8fa'; ctx.font = `500 ${h * 0.04}px ${FONT}`; ctx.fillText('verificado · rumor · sin verificar', w / 2, h * 0.95); tag(ctx, w, h);
+};
+export const drawCalendar = (ctx, w, h) => {                // IDEA STORM · calendario editorial
+  ctx.fillStyle = '#17120a'; ctx.fillRect(0, 0, w, h); head(ctx, w, h, 'CALENDARIO EDITORIAL', '#ffc531');
+  const cols = ['MAÑANA', 'TARDE', 'NOCHE'], days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+  cols.forEach((c, i) => { ctx.fillStyle = '#ffc531'; ctx.font = `700 ${h * 0.045}px ${FONT}`; ctx.textAlign = 'center'; ctx.fillText(c, w * (0.28 + i * 0.24), h * 0.19); });
+  days.forEach((d, r) => { const y = h * (0.23 + r * 0.095); ctx.fillStyle = '#8e93ad'; ctx.font = `600 ${h * 0.04}px ${FONT}`; ctx.textAlign = 'center'; ctx.fillText(d, w * 0.07, y + h * 0.06);
+    cols.forEach((_, i) => { ctx.strokeStyle = 'rgba(255,197,49,.35)'; ctx.strokeRect(w * (0.16 + i * 0.24), y, w * 0.22, h * 0.08); }); });
+  ctx.fillStyle = '#8e93ad'; ctx.font = `500 ${h * 0.037}px ${FONT}`; ctx.fillText('sin publicaciones programadas', w / 2, h * 0.95); tag(ctx, w, h);
+};
+export const drawSocial = (ctx, w, h, t) => {              // DATA BOSS · redes
+  bgGrad(ctx, w, h); head(ctx, w, h, 'REDES · ANALÍTICA', '#2f7bff');
+  ['YouTube', 'TikTok', 'Instagram', 'X'].forEach((n, i) => { const x = w * (0.04 + i * 0.24); ctx.fillStyle = 'rgba(80,110,255,.16)'; ctx.fillRect(x, h * 0.15, w * 0.22, h * 0.17);
+    ctx.fillStyle = '#9fb0ff'; ctx.font = `600 ${h * 0.04}px ${FONT}`; ctx.textAlign = 'left'; ctx.fillText(n, x + 8, h * 0.2); ctx.fillStyle = '#fff'; ctx.font = `800 ${h * 0.075}px ${FONT}`; ctx.fillText('—', x + 8, h * 0.285); });
+  ctx.strokeStyle = '#2f7bff'; ctx.lineWidth = 3; ctx.shadowColor = '#2f7bff'; ctx.shadowBlur = 10; ctx.beginPath(); for (let i = 0; i <= 50; i++) { const x = w * 0.05 + w * 0.9 * i / 50, y = h * (0.62 - 0.12 * Math.sin(i * 0.3 + t * 0.6) - 0.03 * i / 5); ctx[i ? 'lineTo' : 'moveTo'](x, y); } ctx.stroke(); ctx.shadowBlur = 0;
+  for (let i = 0; i < 12; i++) { ctx.fillStyle = 'rgba(180,91,255,.4)'; const bh = h * 0.12 * (0.3 + 0.7 * Math.abs(Math.sin(i * 1.7))); ctx.fillRect(w * (0.06 + i * 0.075), h * 0.9 - bh, w * 0.05, bh); }
+  ctx.fillStyle = '#8890c0'; ctx.font = `500 ${h * 0.035}px ${FONT}`; ctx.textAlign = 'left'; ctx.fillText('Solo cuentas autorizadas (sin conectar)', w * 0.05, h * 0.95); tag(ctx, w, h);
+};
+export const drawExec = (ctx, w, h, t) => {                 // TITAN X · mando
+  bgGrad(ctx, w, h); head(ctx, w, h, 'MANDO EJECUTIVO', '#6fb4ff');
+  ['VIRAL HUNTER', 'HOOK MASTER', 'PIXEL QUEEN', 'FILTER X', 'IDEA STORM', 'DATA BOSS'].forEach((n, i) => { const x = w * (0.04 + (i % 3) * 0.32), y = h * (0.17 + Math.floor(i / 3) * 0.3);
+    ctx.fillStyle = 'rgba(80,110,255,.16)'; ctx.fillRect(x, y, w * 0.29, h * 0.26); ctx.fillStyle = '#cdd6ff'; ctx.font = `600 ${h * 0.045}px ${FONT}`; ctx.textAlign = 'left'; ctx.fillText(n, x + 8, y + h * 0.07); ctx.fillStyle = '#6b7088'; ctx.fillText('● sin conectar', x + 8, y + h * 0.15); });
+  ctx.fillStyle = '#9aa'; ctx.font = `500 ${h * 0.04}px ${FONT}`; ctx.textAlign = 'center'; ctx.fillText('Órdenes · aprobaciones · estado de la empresa', w / 2, h * 0.86); tag(ctx, w, h);
+};
+// Pantallas de cada estación (izquierda, centro, derecha)
+export const STATION_SCREENS = {
+  'viral-hunter': [drawTrends, drawFootball, drawNews],
+  'hook-master': [drawScript, drawScript, drawNews],
+  'pixel-queen': [drawDesign, drawDesign, drawStats],
+  'filter-x': [drawVerify, drawNews, drawVerify],
+  'idea-storm': [drawCalendar, drawCalendar, drawTasks],
+  'data-boss': [drawSocial, drawStats, drawSocial],
+  'titan-x': [drawExec, drawAgentBars, drawTasks],
+};

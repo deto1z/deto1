@@ -3,7 +3,7 @@ import { STAIR, SLAB_EDGE_Z, W, D } from './constants.js';
 const b = (cx, cz, sx, sz, f) => [cx - sx / 2, cx + sx / 2, cz - sz / 2, cz + sz / 2, f];
 export const BOXES = [
   // Planta 1: escritorios (3.2 x 1.5 + silla)
-  ...[7, 1.5, -5].flatMap((z) => [b(-9.7, z, 1.6, 3.4, 1), b(9.7, z, 1.6, 3.4, 1)]),
+  ...[8.8, 4.4, 0.2].flatMap((z) => [b(-9.7, z, 1.6, 3.4, 1), b(9.7, z, 1.6, 3.4, 1), b(-11.5, z, 0.6, 4.0, 1), b(11.5, z, 0.6, 4.0, 1)]),
   b(-4.5, -9, 2, 2, 1), b(4.5, -9, 2, 2, 1), // núcleos IA
   b(0, -11.4, 12, 0.8, 1),                  // videowall
   // Planta 2: despacho TITAN X (paredes con puerta en |x|<1.5)

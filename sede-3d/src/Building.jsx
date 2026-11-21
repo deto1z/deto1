@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { MeshReflectorMaterial, Grid } from '@react-three/drei';
 import { mergeBufferGeometries as mergeGeometries } from 'three-stdlib';
-import { Avatar, LOOKS, TITAN } from './Avatar';
+import Agents from './Agents';
+import { Station } from './Stations';
 import { Model } from './Asset';
 import * as THREE from 'three';
 import { M } from './materials';
@@ -101,46 +102,6 @@ function Shell({ level }) {
 
 
 const floorMarble = repeatOf(marbleT, 5, 3.5);
-const useAction = (id) => useStore((s) => { void s.preview; void s.agentState; return getAgentView(id).action; });
-
-function StationFX({ agent, left }) {
-  const light = useRef(), ring = useRef(), beacon = useRef(), orb = useRef(), q = useStore((s) => s.quality);
-  useFrame(({ clock }) => {
-    const v = getAgentView(agent.id), t = clock.elapsedTime;
-    const col = v.alert ? '#ff3b4d' : v.st.color;
-    if (orb.current) orb.current.material.color.set(col).multiplyScalar(v.status === 'offline' ? 1 : 2);
-    if (ring.current) { ring.current.visible = v.active || !!v.alert; ring.current.material.color.set(col).multiplyScalar(1.6 + Math.sin(t * 4) * 0.5); }
-    if (light.current) { light.current.color.set(col); light.current.intensity += (((v.active || v.alert) ? 12 : 0) - light.current.intensity) * 0.1; }
-    if (beacon.current) { beacon.current.visible = !!v.alert; beacon.current.rotation.y = t * 6; beacon.current.scale.setScalar(1 + Math.sin(t * 8) * 0.15); }
-  });
-  return (
-    <group userData={{ noMerge: true }}>
-      <mesh ref={orb} position={[left ? 1.2 : -1.2, 2.0, 1.25]}><sphereGeometry args={[0.07, 12, 12]} /><meshBasicMaterial color="#6b7088" toneMapped={false} /></mesh>
-      <mesh ref={ring} position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]} visible={false}><ringGeometry args={[2.1, 2.3, 48]} /><meshBasicMaterial color="#2f7bff" toneMapped={false} /></mesh>
-      {q !== 'low' && <pointLight ref={light} position={[left ? 0.9 : -0.9, 2.4, 0]} intensity={0} distance={7} decay={2} />}
-      <mesh ref={beacon} position={[left ? 1.2 : -1.2, 3.35, 0]} visible={false}><coneGeometry args={[0.12, 0.25, 4]} /><meshBasicMaterial color="#ff3b4d" toneMapped={false} /></mesh>
-    </group>
-  );
-}
-
-function Station({ a }) {
-  const left = a.pos[0] < 0;
-  const action = useAction(a.id);
-  return (
-    <group position={[a.pos[0], 0, a.pos[1]]}>
-      <group onClick={(e) => { e.stopPropagation(); useStore.getState().select(a.id); }}
-             onPointerOver={() => (document.body.style.cursor = 'pointer')} onPointerOut={() => (document.body.style.cursor = '')}>
-        <group rotation={[0, left ? 0 : Math.PI, 0]}>
-          <GamingDesk agent={a} />
-          <Avatar id={a.id} action={action} seatTop={0.55} position={[1.07, 0, 0]} rotation={[0, -Math.PI / 2, 0]} phase={a.pos[1]} />
-        </group>
-        <StationSign agent={a} position={[left ? 1.2 : -1.2, 2.55, 0]} rotation={[0, left ? Math.PI / 2 : -Math.PI / 2, 0]} />
-        <mesh position={[0, 1.3, 0]} visible={false}><boxGeometry args={[3, 2.8, 3.6]} /></mesh>
-      </group>
-      <StationFX agent={a} left={left} />
-    </group>
-  );
-}
 
 // Partículas de polvo luminoso (ambiente). Material estándar de puntos: sin shaders propios.
 function Dust() {
@@ -187,8 +148,8 @@ function Floor1() {
       {/* Estaciones de los seis agentes */}
       {AGENTS.map((a) => <Station key={a.id} a={a} />)}
       {/* cámaras y plantas */}
-      <CineCamera position={[-5.5, 0, 9.5]} rotation={[0, Math.PI * 0.85, 0]} />
-      <CineCamera position={[5.5, 0, 9.5]} rotation={[0, -Math.PI * 0.85, 0]} />
+      <CineCamera position={[-14.3, 0, 5.8]} rotation={[0, -Math.PI * 0.55, 0]} />
+      <CineCamera position={[14.3, 0, 2.2]} rotation={[0, Math.PI * 0.55, 0]} />
       <Plant position={[-14.5, 0, 10.5]} /><Plant position={[14.5, 0, 10.5]} />
       <Plant position={[-14.5, 0, -10.5]} /><Plant position={[14.5, 0, -10.5]} /><Plant position={[-2.6, 0, 10.6]} s={1.1} /><Plant position={[2.6, 0, 10.6]} s={1.1} />
       {/* pantalla gigante colgante de doble cara */}
@@ -199,11 +160,6 @@ function Floor1() {
       </group>
     </group>
   );
-}
-
-function TitanAvatar({ y }) {
-  const action = useAction('titan-x');
-  return <Avatar id="titan-x" action={action === 'sit' ? 'sit' : action} seatTop={y + 0.69} position={[0, 0, -10.5]} rotation={[0, 0, 0]} />;
 }
 
 function Floor2() {
@@ -248,7 +204,6 @@ function Floor2() {
         {/* escritorio y sillón */}
         <group position={[0, y, -9.1]}><ExecDesk /></group>
         <ExecChair position={[0, y, -10.6]} rotation={[0, 0, 0]} />
-        <TitanAvatar y={y} />
         {/* holograma gigante */}
         <group position={[0, y + 4.1, -5.8]}>
           <Screen w={5.2} h={1.9} res={256} draw={drawHolo} fps={8} frame={false} additive />
@@ -309,13 +264,13 @@ function Floor2() {
           <Mic position={[0.2, 0.785, -0.1]} rotation={[0, 0.3, 0]} />
           <RingLight position={[-0.55, 0.785, -0.15]} rotation={[0, 0.5, 0]} />
         </group>
-        <CineCamera position={[-12.2, y, -3.9]} rotation={[0, Math.PI * 0.93, 0]} />
+        <CineCamera position={[-15.1, y, -9.6]} rotation={[0, Math.PI * 0.35, 0]} />
         <pointLight position={[-12, y + 4, -7]} color="#9b2bff" intensity={15} distance={14} decay={2} />
         <Strip position={[-12, y + 4.95, -7.6]} size={[7.6, 0.05, 0.05]} />
       </group>
       {/* cámara cinematográfica en el balcón */}
-      <CineCamera position={[-6.5, y, -1.9]} rotation={[0, 0.5, 0]} />
-      <CineCamera position={[6.5, y, -1.9]} rotation={[0, -0.5, 0]} />
+      <CineCamera position={[-14.8, y, -1.6]} rotation={[0, 0.9, 0]} />
+      <CineCamera position={[14.8, y, -1.6]} rotation={[0, -0.9, 0]} />
       <Strip position={[0, y + 0.012, -1.8]} size={[26, 0.01, 0.05]} mat="stripBV2" />
     </group>
   );
@@ -441,6 +396,7 @@ export default function Building() {
       <Exterior />
       <Shell level={level} />
       <Stairs />
+      <Agents />
       {level !== '2' && <Floor1 />}
       {level !== '1' && <Floor2 />}
     </Shadowize>
