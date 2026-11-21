@@ -110,7 +110,7 @@ function StationFX({ agent, left }) {
     const col = v.alert ? '#ff3b4d' : v.st.color;
     if (orb.current) orb.current.material.color.set(col).multiplyScalar(v.status === 'offline' ? 1 : 2);
     if (ring.current) { ring.current.visible = v.active || !!v.alert; ring.current.material.color.set(col).multiplyScalar(1.6 + Math.sin(t * 4) * 0.5); }
-    if (light.current) { light.current.color.set(col); light.current.intensity += (((v.active || v.alert) ? 22 : 0) - light.current.intensity) * 0.1; }
+    if (light.current) { light.current.color.set(col); light.current.intensity += (((v.active || v.alert) ? 12 : 0) - light.current.intensity) * 0.1; }
     if (beacon.current) { beacon.current.visible = !!v.alert; beacon.current.rotation.y = t * 6; beacon.current.scale.setScalar(1 + Math.sin(t * 8) * 0.15); }
   });
   return (
@@ -169,10 +169,10 @@ function Floor1() {
       <Strip position={[0, 0.012, -9]} size={[0.07, 0.01, 5]} />
       {[-9, 9].map((x) => <Strip key={x} position={[x, 0.012, 1.5]} size={[0.06, 0.01, 20]} mat="stripBV2" />)}
       <Strip position={[0, 0.012, 11.2]} size={[10, 0.01, 0.07]} mat="stripBV2" />
-      <pointLight position={[0, 4, 4]} color="#3f7bff" intensity={60} distance={22} decay={2} />
-      <pointLight position={[0, 3.5, -8]} color="#9b2bff" intensity={45} distance={18} decay={2} />
-      <pointLight position={[-10, 3, 0]} color="#2b7bff" intensity={25} distance={14} decay={2} />
-      <pointLight position={[10, 3, 0]} color="#9b4bff" intensity={25} distance={14} decay={2} />
+      <pointLight position={[0, 4, 4]} color="#3f7bff" intensity={23} distance={22} decay={2} />
+      <pointLight position={[0, 3.5, -8]} color="#9b2bff" intensity={17} distance={18} decay={2} />
+      <pointLight position={[-10, 3, 0]} color="#2b7bff" intensity={10} distance={14} decay={2} />
+      <pointLight position={[10, 3, 0]} color="#9b4bff" intensity={10} distance={14} decay={2} />
       {/* videowall (DEMO) bajo el piso superior */}
       <group position={[0, 2.5, -11.7]}>
         <Screen w={6.4} h={3.4} res={256} draw={drawStats} fps={3} position={[0, 0, 0]} />
@@ -260,8 +260,8 @@ function Floor2() {
             position={[-5.82, y + 2.8, -4.6 - i * 2.8 - 0.6]} rotation={[0, Math.PI / 2, 0]} />
         ))}
         <Screen w={5.6} h={2.7} res={256} draw={drawTasks} fps={1} position={[5.82, y + 2.8, -7.6]} rotation={[0, -Math.PI / 2, 0]} />
-        <pointLight position={[0, y + 4.2, -8]} color="#8a35ff" intensity={55} distance={16} decay={2} />
-        <pointLight position={[0, y + 3.5, -4.2]} color="#2f7bff" intensity={35} distance={12} decay={2} />
+        <pointLight position={[0, y + 4.2, -8]} color="#8a35ff" intensity={21} distance={16} decay={2} />
+        <pointLight position={[0, y + 3.5, -4.2]} color="#2f7bff" intensity={13} distance={12} decay={2} />
         <Plant position={[-5, y, -11]} /><Plant position={[5, y, -11]} />
       </group>
       {/* — Sala de juntas — */}
@@ -282,7 +282,7 @@ function Floor2() {
         <Strip position={[12, y + 4.95, -7.6]} size={[7.6, 0.05, 0.05]} />
         <Strip position={[12, y + 4.95, -4.2]} size={[7.6, 0.05, 0.05]} mat="stripBV2" />
         <Logo w={3.6} position={[12, y + 4.3, -11.74]} bg={false} frame={false} />
-        <pointLight position={[12, y + 4, -8]} color="#3f7bff" intensity={45} distance={14} decay={2} />
+        <pointLight position={[12, y + 4, -8]} color="#3f7bff" intensity={17} distance={14} decay={2} />
       </group>
       {/* — Zona lounge y set de streaming — */}
       <group>
@@ -310,7 +310,7 @@ function Floor2() {
           <RingLight position={[-0.55, 0.785, -0.15]} rotation={[0, 0.5, 0]} />
         </group>
         <CineCamera position={[-12.2, y, -3.9]} rotation={[0, Math.PI * 0.93, 0]} />
-        <pointLight position={[-12, y + 4, -7]} color="#9b2bff" intensity={40} distance={14} decay={2} />
+        <pointLight position={[-12, y + 4, -7]} color="#9b2bff" intensity={15} distance={14} decay={2} />
         <Strip position={[-12, y + 4.95, -7.6]} size={[7.6, 0.05, 0.05]} />
       </group>
       {/* cámara cinematográfica en el balcón */}
@@ -377,7 +377,7 @@ function Exterior() {
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.32, 0]}><circleGeometry args={[420, 48]} /><meshStandardMaterial color="#04050c" metalness={0.8} roughness={0.5} /></mesh>
       <Grid position={[0, -0.3, 0]} args={[400, 400]} cellSize={2} cellThickness={0.5} cellColor="#16205a" sectionSize={10} sectionThickness={1} sectionColor="#3a1f8a" fadeDistance={160} fadeStrength={1.5} infiniteGrid />
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.28, 28]}><planeGeometry args={[40, 32]} /><meshStandardMaterial map={floorMarble} color="#8f98d0" metalness={0.6} roughness={0.25} /></mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.28, 28]}><planeGeometry args={[40, 32]} /><meshStandardMaterial map={floorMarble} color="#5f678f" metalness={0.5} roughness={0.5} envMapIntensity={0.15} /></mesh>
       <Strip position={[0, -0.25, 22]} size={[0.15, 0.02, 20]} />
       <Strip position={[-4, -0.25, 22]} size={[0.08, 0.02, 20]} mat="stripBV2" />
       <Strip position={[4, -0.25, 22]} size={[0.08, 0.02, 20]} mat="stripBV2" />
