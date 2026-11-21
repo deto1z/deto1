@@ -8,7 +8,7 @@
 **Lo que NO se ha podido probar**: llamadas reales a Claude, a Google News/YouTube y a las redes (este entorno no tiene clave ni salida de red). La calidad real de TITAN X y de los agentes se verá en la prueba real.
 
 ## Requisitos
-1. Node ≥ 22.5. 2. `INICIAR_STAGING.bat` (crea tu cuenta). 3. Clave en `server/.env` + escribir AUTORIZO en «Costos» para el proveedor elegido. 4. Límites revisados.
+1. Node ≥ 22.5. 2. `INICIAR_STAGING.bat` (crea tu cuenta). 3. Clave en `.env` + escribir AUTORIZO en «Costos» para el proveedor elegido. 4. Límites revisados.
 
 ## Pasos
 1. Inicia sesión → «Costos»: verifica límites y que el interruptor está apagado.

@@ -11,7 +11,7 @@ if not exist server\data\detonador.db (
   echo  Primera vez: crea tu cuenta privada de propietario.
   call npm run setup-owner || ( pause & exit /b 1 )
 )
-if not exist server\.env ( copy .env.example server\.env >nul & echo  Se creo server\.env SIN claves: ningun servicio de pago esta activo. )
+if not exist .env ( copy .env.example .env >nul & echo  Se creo .env SIN claves: ningun servicio de pago esta activo. )
 echo  Construyendo e iniciando en http://127.0.0.1:8787  (solo este equipo)
 start "" http://127.0.0.1:8787
 call npm run start:staging

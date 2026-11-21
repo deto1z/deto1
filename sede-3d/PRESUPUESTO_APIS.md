@@ -51,7 +51,7 @@ Si se usa la caché de prompt, baja. Si se usa búsqueda web de Anthropic: +$0.0
 
 ## 5. Decisiones que necesito de ti
 
-1. ¿Autorizas contratar Anthropic API? Si sí: crea la clave tú, ponla en `server/.env` (`ANTHROPIC_API_KEY`), y escribe `AUTORIZO` en el panel. **Nunca me envíes la clave por chat.**
+1. ¿Autorizas contratar Anthropic API? Si sí: crea la clave tú, ponla en `.env` (`ANTHROPIC_API_KEY`), y escribe `AUTORIZO` en el panel. **Nunca me envíes la clave por chat.**
 2. Modelo para la primera prueba (Haiku / Sonnet / Opus) y tope mensual que aceptas.
 3. ¿Activamos YouTube Data API (gratis, requiere crear clave en Google Cloud)?
 4. ¿Brave Search (de pago, precio por verificar) o nos quedamos con RSS + YouTube?
