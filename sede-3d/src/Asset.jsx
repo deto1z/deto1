@@ -3,6 +3,9 @@ import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { SkeletonUtils } from 'three-stdlib';
 
+import { modelPath } from './modelBase';
+export const modelUrl = (name) => modelPath(name + '.glb');
+
 /* Cargador de modelos GLB con licencia abierta (ver CREDITOS.md).
    Normaliza el tamaño (height | width), apoya la base en y=0 y centra en XZ.
    Si el archivo no existe o falla, muestra `fallback` (mobiliario procedural). */
@@ -14,7 +17,7 @@ class Boundary extends Component {
 }
 
 function Loaded({ file, height, width, position, rotation, tint }) {
-  const { scene } = useGLTF(`${import.meta.env.BASE_URL}models/${file}.glb`);
+  const { scene } = useGLTF(modelUrl(file));
   const obj = useMemo(() => {
     const o = SkeletonUtils.clone(scene);
     const lights = []; o.traverse((x) => { if (x.isLight) lights.push(x); }); lights.forEach((l) => { l.target?.parent?.remove(l.target); l.parent?.remove(l); });   // los GLB traen luces incrustadas: se descartan

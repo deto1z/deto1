@@ -4,7 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <meta name="theme-color" content="#05060f" />
-    <title>DETONADOR AI EMPIRE — Sede Virtual 3D</title>
+    <title>DETONADOR AI EMPIRE</title>
+    <style>
+      :root { --bg: #05060f; --fg: #eaf0ff; --accent: #2f7bff; color-scheme: dark; }
+      @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #05060f; --fg: #eaf0ff; } }
+      :root[data-theme="dark"] { --bg: #05060f; --fg: #eaf0ff; }
+      html, body { margin: 0; background: var(--bg); color: var(--fg); }
+    </style>
   </head>
   <body>
     <div id="root"></div>

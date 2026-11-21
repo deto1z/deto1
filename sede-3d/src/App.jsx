@@ -40,7 +40,7 @@ function AutoQuality() {
 
 function Exposure() {
   const gl = useThree((s) => s.gl), cut = useStore((s) => s.cutaway);
-  useEffect(() => { gl.toneMappingExposure = cut ? 1.7 : 1.15; }, [gl, cut]);
+  useEffect(() => { gl.toneMappingExposure = cut ? 2.1 : 1.15; }, [gl, cut]);
   return null;
 }
 

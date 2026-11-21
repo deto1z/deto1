@@ -7,12 +7,14 @@ import { useStore } from './store';
 // Pantalla con contenido dibujado en canvas. `draw(ctx,w,h,t)` se llama a `fps`.
 // IMPORTANTE: todo el contenido actual es DEMOSTRACIÓN (sin datos reales) y se rotula como tal.
 export function Screen({ w = 2, h = 1.2, res = 256, draw, fps = 4, position, rotation, frame = true, glow = 'blue', additive = false }) {
+  const grp = useRef(), wp = useMemo(() => new THREE.Vector3(), []);
   const cv = useMemo(() => makeCanvasTexture(Math.round(res * w / h), res), [res, w, h]);
   const last = useRef(-1);
   const low = useStore((s) => s.quality === 'low');
-  useFrame(({ clock }) => {
+  useFrame(({ clock, camera }) => {
     const t = clock.elapsedTime;
-    const f = low ? Math.min(fps, 2) : fps;
+    let f = low ? Math.min(fps, 2) : fps;
+    if (grp.current) { grp.current.getWorldPosition(wp); const d = wp.distanceTo(camera.position); if (d > 32) f = Math.min(f, 0.4); else if (d > 16) f = Math.min(f, 1.5); }   // pantallas lejanas: menos redibujado
     if (last.current < 0 || t - last.current > 1 / f) {
       last.current = t;
       draw(cv.ctx, cv.canvas.width, cv.canvas.height, t);
@@ -21,7 +23,7 @@ export function Screen({ w = 2, h = 1.2, res = 256, draw, fps = 4, position, rot
   });
   const fc = glow === 'violet' ? '#9b2bff' : '#1f6bff';
   return (
-    <group position={position} rotation={rotation}>
+    <group ref={grp} position={position} rotation={rotation}>
       {frame && (
         <mesh position={[0, 0, -0.03]}>
           <boxGeometry args={[w + 0.12, h + 0.12, 0.05]} />

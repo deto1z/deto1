@@ -9,9 +9,9 @@ import { SkeletonUtils } from 'three-stdlib';
    + animaciones de captura de movimiento (Quaternius «Universal Animation Library», CC0).
    Las animaciones se retargetean en tiempo real a cada esqueleto (por rotaciones de mundo).
    ─────────────────────────────────────────────────────────────── */
-const BASE = import.meta.env.BASE_URL;
-export const CHAR_FILE = (name) => `${BASE}models/characters/${name}.glb`;
-const ANIM_FILE = `${BASE}models/ual_animations.glb`;
+import { modelPath } from './modelBase';
+export const CHAR_FILE = (name) => modelPath('characters/' + name + '.glb');
+const ANIM_FILE = modelPath('ual_animations.glb');
 
 const san = (n) => n.replace(/\s/g, '_').replace(/[\[\]\.:\/]/g, '');
 const FINGERS = ['index', 'middle', 'ring', 'pinky'];

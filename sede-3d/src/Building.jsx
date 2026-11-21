@@ -375,7 +375,7 @@ function mergeStatic(root, shadows) {
     });
     const mesh = new THREE.Mesh(mergeGeometries(geos, false), m);
     mesh.castShadow = shadows && m.type !== 'MeshBasicMaterial'; mesh.receiveShadow = shadows && m.type !== 'MeshBasicMaterial'; mesh.userData.noShadowToggle = true;
-    out.add(mesh); list.forEach((o) => { o.visible = false; hidden.push(o); });
+    out.add(mesh); list.forEach((o) => { o.visible = false; hidden.push(o); o.geometry.dispose(); });   // libera la copia original de la GPU
     geos.forEach((g) => g.dispose());
   });
   root.add(out);
