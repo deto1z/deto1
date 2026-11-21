@@ -1,0 +1,12 @@
+import { NodeIO } from '@gltf-transform/core';
+import { prune } from '@gltf-transform/functions';
+const io = new NodeIO();
+const doc = await io.read('/home/user/j-ponzo/gltf-universal-animation-library/glTF/AnimationLibrary_Godot_Standard.gltf');
+const keep = new Set(['Idle_Loop', 'Idle_Talking_Loop', 'Walk_Loop', 'Walk_Formal_Loop', 'Sitting_Enter', 'Sitting_Idle_Loop', 'Sitting_Talking_Loop', 'Sitting_Exit', 'Interact', 'Driving_Loop', 'A_TPose', 'Crouch_Idle_Loop']);
+const root = doc.getRoot();
+root.listAnimations().forEach((a) => { if (!keep.has(a.getName())) a.dispose(); });
+root.listNodes().forEach((n) => { n.setMesh(null); n.setSkin(null); });
+root.listMeshes().forEach((m) => m.dispose()); root.listSkins().forEach((s) => s.dispose());
+await doc.transform(prune());
+await io.write('/home/user/deto1/sede-3d/public/models/ual_animations.glb', doc);
+console.log('ok', root.listAnimations().map((a) => a.getName()).join(','));
