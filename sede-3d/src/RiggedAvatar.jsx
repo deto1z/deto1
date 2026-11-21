@@ -103,8 +103,9 @@ export function RiggedAvatar({ file, tweaks, action = 'idle', seatTop = 0.55, se
     }
     // 2) desplazamiento de la cadera (sentarse, rebote al caminar), escalado a la altura del personaje
     rig.sHips.getWorldPosition(tmpV).sub(rig.sHipsRest).multiplyScalar(rig.k).add(rig.tHipsRest);
-    rig.tHipsParent.updateWorldMatrix(true, false);
-    rig.tHips.position.copy(rig.tHipsParent.worldToLocal(tmpV));
+    rig.root.updateWorldMatrix(true, false); rig.tHipsParent.updateWorldMatrix(true, false);
+    rig.root.localToWorld(tmpV);                                   // (espacio del personaje → mundo)
+    rig.tHips.position.copy(rig.tHipsParent.worldToLocal(tmpV));    // → espacio del hueso padre
     if (A.seated) rig.tHips.position.z -= seatBack;
     rig.tHips.updateMatrixWorld(true);
     // 3) capas procedurales sobre la animación (escribir, mirar pantallas)
