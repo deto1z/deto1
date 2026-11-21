@@ -80,7 +80,7 @@ function Shell({ level }) {
       {[-12, -6, 6, 12].map((x) => <Strip key={x} position={[x, 5, -HZ + 0.03]} size={[0.06, 9.8, 0.03]} mat={x < 0 ? 'stripBV' : 'stripBV2'} />)}
       <Mullions />
       {/* techo de cristal oscuro */}
-      {level !== '1' && (
+      {level === 'all' && (
         <group>
           <mesh position={[0, 10.1, 0]} material={M.glassDark}><boxGeometry args={[W + 0.6, 0.2, D + 0.6]} /></mesh>
           {Array.from({ length: 7 }, (_, i) => (
@@ -235,7 +235,7 @@ function Floor2() {
         <Logo w={8.5} position={[0, y + 2.9, -11.7]} />
         {/* escritorio y sillón */}
         <group position={[0, y, -9.1]}><ExecDesk /></group>
-        <ExecChair position={[0, y, -10.6]} rotation={[0, Math.PI, 0]} />
+        <ExecChair position={[0, y, -10.6]} rotation={[0, 0, 0]} />
         <TitanAvatar y={y} />
         {/* holograma gigante */}
         <group position={[0, y + 4.1, -5.8]}>
