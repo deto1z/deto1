@@ -2,6 +2,7 @@ import { Component, Suspense, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { SkeletonUtils } from 'three-stdlib';
+import { useStore } from './store';
 
 import { modelPath } from './modelBase';
 export const modelUrl = (name) => modelPath(name + '.glb');
@@ -16,10 +17,11 @@ class Boundary extends Component {
   render() { return this.state.err ? this.props.fallback ?? null : this.props.children; }
 }
 
-function Loaded({ file, height, width, position, rotation, tint }) {
+function Loaded({ file, height, width, position, rotation, tint, hide }) {
   const { scene } = useGLTF(modelUrl(file));
   const obj = useMemo(() => {
     const o = SkeletonUtils.clone(scene);
+    if (hide) { const rm = []; o.traverse((x) => { if (x.isMesh && hide.test(x.name)) rm.push(x); }); rm.forEach((x) => x.parent?.remove(x)); }
     const lights = []; o.traverse((x) => { if (x.isLight) lights.push(x); }); lights.forEach((l) => { l.target?.parent?.remove(l.target); l.parent?.remove(l); });   // los GLB traen luces incrustadas: se descartan
     const box = new THREE.Box3().setFromObject(o), size = box.getSize(new THREE.Vector3()), ctr = box.getCenter(new THREE.Vector3());
     const k = height ? height / size.y : width ? width / Math.max(size.x, size.z) : 1;
@@ -39,5 +41,6 @@ function Loaded({ file, height, width, position, rotation, tint }) {
 }
 
 export function Model({ fallback, ...p }) {
+  if (useStore((s) => s.quality) === 'min') return fallback ?? null;   // calidad mínima: sin modelos decorativos
   return <Boundary fallback={fallback}><Suspense fallback={fallback}><Loaded {...p} /></Suspense></Boundary>;
 }

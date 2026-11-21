@@ -268,7 +268,7 @@ export function Plant({ position, s = 1.4 }) {
       <mesh position={[0, 0.6 * s, 0]} rotation={[Math.PI / 2, 0, 0]} material={M.stripBV}><torusGeometry args={[0.3 * s, 0.012, 6, 24]} /></mesh>
       <mesh position={[0, 0.6 * s, 0]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[0.29 * s, 18]} /><meshStandardMaterial color="#050608" roughness={1} /></mesh>
       <group position={[0, 0.58 * s, 0]}>
-        <Model file="DiffuseTransmissionPlant" height={1.5 * s} fallback={null} />
+        <Model file="DiffuseTransmissionPlant" height={1.5 * s} hide={/^pot/i} fallback={null} />
       </group>
     </group>
   );

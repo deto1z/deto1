@@ -1,0 +1,81 @@
+{
+ "fecha": "2026-11-21T06:41:25.970Z",
+ "entorno": "Chromium headless + SwiftShader (sin GPU)",
+ "resultados": [
+  {
+   "configuracion": "Alta",
+   "meshesVisibles": 549,
+   "triangulos": 248497,
+   "mallasConHuesos": 78,
+   "mallasInstanciadas": 1,
+   "lucesActivas": 21,
+   "geometriasEnMemoria": 2240,
+   "texturasEnMemoria": 197,
+   "programasShader": 51,
+   "fpsSoftware": 0,
+   "heapMB": 78,
+   "descargaMB": 15.1,
+   "segundosHastaPrimerFotograma": 10.3
+  },
+  {
+   "configuracion": "Media",
+   "meshesVisibles": 544,
+   "triangulos": 248197,
+   "mallasConHuesos": 78,
+   "mallasInstanciadas": 1,
+   "lucesActivas": 13,
+   "geometriasEnMemoria": 2239,
+   "texturasEnMemoria": 190,
+   "programasShader": 49,
+   "fpsSoftware": 1,
+   "heapMB": 78,
+   "descargaMB": 15.1,
+   "segundosHastaPrimerFotograma": 5.8
+  },
+  {
+   "configuracion": "Baja",
+   "meshesVisibles": 549,
+   "triangulos": 247764,
+   "mallasConHuesos": 78,
+   "mallasInstanciadas": 1,
+   "lucesActivas": 13,
+   "geometriasEnMemoria": 2238,
+   "texturasEnMemoria": 172,
+   "programasShader": 61,
+   "fpsSoftware": 1,
+   "heapMB": 98,
+   "descargaMB": 15.1,
+   "segundosHastaPrimerFotograma": 5.6
+  },
+  {
+   "configuracion": "Mínima",
+   "meshesVisibles": 544,
+   "triangulos": 248197,
+   "mallasConHuesos": 78,
+   "mallasInstanciadas": 1,
+   "lucesActivas": 19,
+   "geometriasEnMemoria": 2238,
+   "texturasEnMemoria": 172,
+   "programasShader": 61,
+   "fpsSoftware": 1,
+   "heapMB": 98,
+   "descargaMB": 15.1,
+   "segundosHastaPrimerFotograma": 5.8
+  },
+  {
+   "configuracion": "Móvil (iPhone 13, Baja)",
+   "meshesVisibles": 544,
+   "triangulos": 247464,
+   "mallasConHuesos": 78,
+   "mallasInstanciadas": 1,
+   "lucesActivas": 13,
+   "geometriasEnMemoria": 2074,
+   "texturasEnMemoria": 171,
+   "programasShader": 61,
+   "fpsSoftware": 1,
+   "heapMB": 104,
+   "descargaMB": 15.1,
+   "segundosHastaPrimerFotograma": 5.2
+  }
+ ]
+}

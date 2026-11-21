@@ -25,7 +25,9 @@ export function AgentActor({ id }) {
     if (!S.current) { const s = deskSeat(id); S.current = { place: 'desk', pos: new THREE.Vector3(s.x, s.y, s.z), yaw: s.yaw, path: [], phase: 'seated', timer: 0, seat: s }; }
     const M = S.current;
     let next = null;
-    if (M.phase === 'seated' && want !== M.place) {
+    if (M.phase === 'seated' && want !== M.place && st.instant) {   // solo pruebas: cambio de lugar inmediato
+      const sp = placeSeat(id, want); M.pos.set(sp.x, sp.y, sp.z); M.yaw = sp.yaw; M.place = want; M.seat = sp;
+    } else if (M.phase === 'seated' && want !== M.place) {
       M.phase = 'standing'; M.timer = 1.4; M.target = want; M.path = planRoute(id, M.place, want); next = 'idle';
     } else if (M.phase === 'standing') {
       M.timer -= dt; if (M.timer <= 0) { M.phase = M.path.length ? 'walking' : 'arrive'; next = M.path.length ? (id === 'titan-x' ? 'walkFormal' : 'walk') : null; }
