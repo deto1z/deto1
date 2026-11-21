@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, Lightformer, Stars } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
@@ -38,15 +38,21 @@ function AutoQuality() {
   return null;
 }
 
+function Exposure() {
+  const gl = useThree((s) => s.gl), cut = useStore((s) => s.cutaway);
+  useEffect(() => { gl.toneMappingExposure = cut ? 1.7 : 1.15; }, [gl, cut]);
+  return null;
+}
+
 function Scene() {
   const q = useStore((s) => s.quality), gfx = useStore((s) => s.gfx);
   return (
     <>
       <color attach="background" args={['#04050d']} />
       <fog attach="fog" args={['#06081a', 60, 330]} />
-      <ambientLight intensity={0.55} color="#6f7cff" />
-      <hemisphereLight args={['#4d6bff', '#1a0a3a', 0.5]} />
-      <directionalLight position={[12, 34, 20]} intensity={q === 'low' ? 0.4 : 0.2} color="#a9b9ff" castShadow={gfx.shadows}
+      <ambientLight intensity={1.0} color="#7f8cff" />
+      <hemisphereLight args={['#5d7bff', '#2a1a5a', 0.8]} />
+      <directionalLight position={[12, 34, 20]} intensity={q === 'low' ? 0.7 : 0.6} color="#b9c6ff" castShadow={gfx.shadows}
         shadow-mapSize={[2048, 2048]} shadow-camera-left={-24} shadow-camera-right={24} shadow-camera-top={20} shadow-camera-bottom={-20}
         shadow-camera-near={1} shadow-camera-far={90} shadow-bias={-0.0004} shadow-normalBias={0.04} shadow-radius={5} />
       {q === 'high' && gfx.shadows && <>
@@ -60,7 +66,7 @@ function Scene() {
         {[-1, 1].map((sx) => [0, 1, 2].map((k) => <Lightformer key={`${sx}${k}`} form="rect" intensity={1.8} color={k === 1 ? "#9b2bff" : "#2f6bff"} position={[sx * 18, 5, -8 + k * 8]} rotation-y={sx * Math.PI / 2} scale={[1.2, 9, 1]} />))}
       </Environment>
       <Stars radius={260} depth={60} count={q === 'low' || q === 'min' ? 800 : 3000} factor={5} fade speed={0.6} />
-      <Tick /><Meter /><AutoQuality />
+      <Tick /><Exposure /><Meter /><AutoQuality />
       <Suspense fallback={null}><Building /></Suspense>
       <CameraRig />
       {gfx.bloom && (

@@ -43,7 +43,7 @@ export const AGENTS = [
 
 // Vistas de cámara. level/cutaway: planta visible y techo oculto; fov: apertura (isométrica = estrecha)
 export const PRESETS = {
-  general:  { label: 'Vista general',   pos: [38, 31, 40],  target: [0, 2.5, 0],  fov: 30, cutaway: true },
+  general:  { label: 'Vista general',   pos: [40, 33, 44],  target: [0, 2.0, 0],  fov: 30, cutaway: true },
   exterior: { label: 'Exterior',        pos: [36, 13, 40],  target: [0, 5, 0] },
   entrada:  { label: 'Entrada',         pos: [0, 2.0, 15.2], target: [0, 3.0, 2] },
   planta1:  { label: 'Planta 1',        pos: [0, 27, 21],   target: [0, 0, 0],    level: '1', cutaway: true },
