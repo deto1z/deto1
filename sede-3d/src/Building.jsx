@@ -114,7 +114,7 @@ function StationFX({ agent, left }) {
     if (beacon.current) { beacon.current.visible = !!v.alert; beacon.current.rotation.y = t * 6; beacon.current.scale.setScalar(1 + Math.sin(t * 8) * 0.15); }
   });
   return (
-    <group>
+    <group userData={{ noMerge: true }}>
       <mesh ref={orb} position={[left ? 1.2 : -1.2, 2.0, 1.25]}><sphereGeometry args={[0.07, 12, 12]} /><meshBasicMaterial color="#6b7088" toneMapped={false} /></mesh>
       <mesh ref={ring} position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]} visible={false}><ringGeometry args={[2.1, 2.3, 48]} /><meshBasicMaterial color="#2f7bff" toneMapped={false} /></mesh>
       {q !== 'low' && <pointLight ref={light} position={[left ? 0.9 : -0.9, 2.4, 0]} intensity={0} distance={7} decay={2} />}
@@ -374,15 +374,50 @@ function Exterior() {
   );
 }
 
+/* Optimización: fusiona las mallas ESTÁTICAS con material equivalente en una sola (de miles de llamadas de dibujo a unas decenas).
+   Se excluye todo lo animado (userData.noMerge), lo transparente, lo invisible y los materiales especiales. */
+const sig = (m) => [m.type, m.color?.getHex(), m.emissive?.getHex(), m.emissiveIntensity, m.metalness, m.roughness, m.map?.uuid, m.emissiveMap?.uuid, m.opacity, m.side, m.toneMapped, m.envMapIntensity].join('|');
+function mergeStatic(root, shadows) {
+  root.updateWorldMatrix(true, true);
+  const groups = new Map(), hidden = [];
+  root.traverse((o) => {
+    if (!o.isMesh || o.isInstancedMesh || o.isSkinnedMesh || !o.visible || o.parent?.type === 'Scene') return;
+    for (let p = o; p; p = p.parent) if (p.userData?.noMerge || p.visible === false) return;
+    const m = o.material;
+    if (!m || Array.isArray(m) || m.transparent || !['MeshStandardMaterial', 'MeshBasicMaterial'].includes(m.type) || m.constructor.name.includes('Reflector')) return;
+    const k = sig(m); if (!groups.has(k)) groups.set(k, { m, list: [] }); groups.get(k).list.push(o);
+  });
+  const out = new THREE.Group(); out.userData.merged = true;
+  groups.forEach(({ m, list }) => {
+    if (list.length < 3) return;
+    const geos = list.map((o) => {
+      const g = o.geometry.clone(); g.applyMatrix4(o.matrixWorld);
+      for (const n of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(n)) g.deleteAttribute(n);
+      if (!g.attributes.uv) g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2));
+      return g.index ? g.toNonIndexed() : g;
+    });
+    const mesh = new THREE.Mesh(mergeGeometries(geos, false), m);
+    mesh.castShadow = shadows && m.type !== 'MeshBasicMaterial'; mesh.receiveShadow = shadows && m.type !== 'MeshBasicMaterial'; mesh.userData.noShadowToggle = true;
+    out.add(mesh); list.forEach((o) => { o.visible = false; hidden.push(o); });
+    geos.forEach((g) => g.dispose());
+  });
+  root.add(out);
+  return () => { root.remove(out); out.traverse((o) => o.geometry?.dispose()); hidden.forEach((o) => { o.visible = true; }); };
+}
+
 function Shadowize({ children }) {
-  const ref = useRef(), q = useStore((s) => s.quality), level = useStore((s) => s.level);
+  const ref = useRef(), q = useStore((s) => s.quality), level = useStore((s) => s.level), phase = useStore((s) => s.phase);
   useEffect(() => {
-    const id = setTimeout(() => ref.current?.traverse((o) => {
-      if (!o.isMesh || o.userData.noShadow) return;
-      const m = o.material, basic = m?.isMeshBasicMaterial || m?.transparent;
-      o.castShadow = q !== 'low' && !basic; o.receiveShadow = q !== 'low' && !m?.isMeshBasicMaterial;
-    }), 1500);
-    return () => clearTimeout(id);
+    let undo = null;
+    const id = setTimeout(() => {
+      ref.current?.traverse((o) => {
+        if (!o.isMesh || o.userData.noShadow) return;
+        const m = o.material, basic = m?.isMeshBasicMaterial || m?.transparent;
+        o.castShadow = q !== 'low' && !basic; o.receiveShadow = q !== 'low' && !m?.isMeshBasicMaterial;
+      });
+      if (ref.current) undo = mergeStatic(ref.current, q !== 'low');
+    }, 2500);
+    return () => { clearTimeout(id); undo?.(); };
   }, [q, level]);
   return <group ref={ref}>{children}</group>;
 }

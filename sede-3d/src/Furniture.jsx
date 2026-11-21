@@ -91,7 +91,7 @@ export function Headphones({ position, rotation }) {
 
 function Fan({ r, R }) {
   return (
-    <group ref={r}>
+    <group ref={r} userData={{ noMerge: true }}>
       {[0, 1, 2, 3, 4].map((i) => (
         <mesh key={i} rotation={[0, 0, i * 1.2566]} position={[Math.cos(i * 1.2566) * R * 0.5, Math.sin(i * 1.2566) * R * 0.5, 0.004]} material={M.rgb}>
           <boxGeometry args={[R * 0.9, R * 0.28, 0.003]} />
@@ -312,7 +312,7 @@ export function CineCamera({ position, rotation = [0, 0, 0] }) {
       {[0.3, 0.38, 0.45].map((z) => <mesh key={z} position={[0, 1.55, z]} rotation={[Math.PI / 2, 0, 0]} material={M.chrome}><torusGeometry args={[0.1, 0.006, 6, 20]} /></mesh>)}
       <B p={[0, 1.55, 0.6]} s={[0.3, 0.24, 0.16]} m={M.black} />
       <mesh position={[0, 1.55, 0.69]} rotation={[0, 0, 0]}><planeGeometry args={[0.16, 0.14]} /><meshStandardMaterial color="#03040a" metalness={1} roughness={0.05} /></mesh>
-      <mesh ref={tally} position={[0, 1.7, 0.2]} material={M.led}><sphereGeometry args={[0.015, 6, 6]} /></mesh>
+      <mesh ref={tally} userData={{ noMerge: true }} position={[0, 1.7, 0.2]} material={M.led}><sphereGeometry args={[0.015, 6, 6]} /></mesh>
       <B p={[0, 1.55, -0.28]} s={[0.12, 0.2, 0.06]} m={M.metal} />
     </group>
   );
@@ -327,7 +327,7 @@ export function AICore({ position }) {
     if (orb.current) orb.current.scale.setScalar(1 + Math.sin(t * 2) * 0.06);
   });
   return (
-    <group position={position}>
+    <group position={position} userData={{ noMerge: true }}>
       <mesh position={[0, 0.1, 0]} material={M.black}><cylinderGeometry args={[0.9, 1, 0.2, 32]} /></mesh>
       <mesh position={[0, 0.22, 0]} rotation={[-Math.PI / 2, 0, 0]} material={M.stripBV}><ringGeometry args={[0.8, 0.88, 48]} /></mesh>
       <mesh position={[0, 1.8, 0]} material={M.glass}><cylinderGeometry args={[0.7, 0.7, 3.2, 32, 1, true]} /></mesh>

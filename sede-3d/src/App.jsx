@@ -57,7 +57,7 @@ export default function App() {
   return (
     <div className="app">
       <Canvas shadows={q === 'low' ? false : 'soft'} key={q === 'low' ? 'l' : 'h'} dpr={q === 'low' ? [1, 1.25] : q === 'medium' ? [1, 1.5] : [1, 2]} gl={{ antialias: q !== 'high', powerPreference: 'high-performance', toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
-        camera={{ position: [36, 13, 40], fov: 55 }} onPointerMissed={() => useStore.getState().select(null)}>
+        onCreated={({ gl, scene }) => { if (new URLSearchParams(location.search).has('debug')) window.__gl = gl; window.__scene = scene; }} camera={{ position: [36, 13, 40], fov: 55 }} onPointerMissed={() => useStore.getState().select(null)}>
         <Scene />
       </Canvas>
       <Intro />

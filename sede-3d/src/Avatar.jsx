@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { mergeBufferGeometries } from 'three-stdlib';
 
 /* ───────────────────────────────────────────────────────────────
    Personajes humanoides con rig de articulaciones (huesos) propio.
@@ -61,7 +62,7 @@ function build(look) {
   m(head, sph(0.112), skin, [0, 0.07, 0], [0.92, 1.1, 1]);
   m(head, sph(0.04), skin, [0, 0.02, 0.1], [1, 0.9, 0.8]);                       // nariz
   [-1, 1].forEach((sx) => { m(head, sph(0.018), eyeM, [sx * 0.04, 0.09, 0.098], [1.3, 0.8, 0.6]); m(head, sph(0.03), skin, [sx * 0.105, 0.06, 0], [0.5, 1, 0.9]); });
-  J.mouth = m(head, box(0.05, 0.012, 0.01), dark, [0, -0.02, 0.098]);
+  J.mouth = m(head, box(0.05, 0.012, 0.01), dark, [0, -0.02, 0.098]); J.mouth.userData.keep = true;
   // pelo
   const st = look.style;
   if (st === 'slick') { m(head, sph(0.118), hair, [0, 0.1, -0.012], [0.95, 0.95, 1.02]); }
@@ -113,7 +114,24 @@ function build(look) {
     return [hp, kn, an];
   };
   [J.hipL, J.kneeL, J.ankL] = leg(1); [J.hipR, J.kneeR, J.ankR] = leg(-1);
+  bake(root);
   return { root, J, s };
+}
+
+/* Fusiona, dentro de cada articulación, las piezas rígidas que comparten material (menos llamadas de dibujo) */
+function bake(root) {
+  root.traverse((grp) => {
+    if (grp.isMesh) return;
+    const by = new Map();
+    grp.children.filter((c) => c.isMesh && !c.userData.keep).forEach((c) => { if (!by.has(c.material)) by.set(c.material, []); by.get(c.material).push(c); });
+    by.forEach((list, material) => {
+      if (list.length < 2) return;
+      const geos = list.map((c) => { c.updateMatrix(); const g = c.geometry.clone(); g.applyMatrix4(c.matrix); if (g.index) return g.toNonIndexed(); return g; });
+      geos.forEach((g) => { for (const n of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(n)) g.deleteAttribute(n); });
+      const merged = new THREE.Mesh(mergeBufferGeometries(geos, false), material); merged.castShadow = true;
+      list.forEach((c) => grp.remove(c)); grp.add(merged);
+    });
+  });
 }
 
 /* Acciones: define la pose objetivo de cada articulación. */
@@ -187,5 +205,5 @@ export function Avatar({ id, action = 'idle', seatTop = 0.55, position, rotation
     rig.J.mouth.scale.y = talking(action) ? 0.4 + Math.abs(Math.sin(t * 11 + phase)) * 2.2 : 0.6;
     if (rig.J.bulb) { rig.J.bulb.rotation.y = t * 2; rig.J.bulb.position.y = 0.42 + Math.sin(t * 2) * 0.02; }
   });
-  return <group position={position} rotation={rotation} scale={scale}><primitive object={rig.root} /></group>;
+  return <group position={position} rotation={rotation} scale={scale} userData={{ noMerge: true }}><primitive object={rig.root} /></group>;
 }
