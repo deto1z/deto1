@@ -161,8 +161,8 @@ function Floor1() {
       <mesh position={[0, -0.15, 0]} material={M.floor1}><boxGeometry args={[W, 0.3, D]} /></mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.003, 0]}>
         <planeGeometry args={[W, D]} />
-        {hq ? <MeshReflectorMaterial map={floorMarble} color="#aab4ff" resolution={512} blur={[300, 100]} mixBlur={1} mixStrength={9} mirror={0.6} roughness={0.55} depthScale={0} metalness={0.4} envMapIntensity={0.35} />
-            : <meshStandardMaterial map={floorMarble} color="#aab4ff" metalness={0.5} roughness={0.3} envMapIntensity={0.35} />}
+        {hq ? <MeshReflectorMaterial map={floorMarble} color="#aab4ff" resolution={512} blur={[300, 100]} mixBlur={1} mixStrength={9} mirror={0.6} roughness={0.55} depthScale={0} metalness={0.15} envMapIntensity={0.35} />
+            : <meshStandardMaterial map={floorMarble} color="#aab4ff" metalness={0.15} roughness={0.35} envMapIntensity={0.35} />}
       </mesh>
       {/* líneas de guía en el suelo */}
       <Strip position={[0, 0.012, 3]} size={[0.07, 0.01, 18]} />
@@ -375,9 +375,9 @@ function City() {
 function Exterior() {
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.32, 0]}><circleGeometry args={[420, 48]} /><meshStandardMaterial color="#04050c" metalness={0.8} roughness={0.6} envMapIntensity={0.25} /></mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.32, 0]}><circleGeometry args={[420, 48]} /><meshStandardMaterial color="#04050c" metalness={0.1} roughness={0.85} envMapIntensity={0.2} /></mesh>
       <Grid position={[0, -0.3, 0]} args={[400, 400]} cellSize={2} cellThickness={0.5} cellColor="#16205a" sectionSize={10} sectionThickness={1} sectionColor="#3a1f8a" fadeDistance={160} fadeStrength={1.5} infiniteGrid />
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.28, 28]}><planeGeometry args={[40, 32]} /><meshStandardMaterial map={floorMarble} color="#5f678f" metalness={0.5} roughness={0.5} envMapIntensity={0.15} /></mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.28, 28]}><planeGeometry args={[40, 32]} /><meshStandardMaterial map={floorMarble} color="#2c3252" metalness={0.1} roughness={0.7} envMapIntensity={0.15} /></mesh>
       <Strip position={[0, -0.25, 22]} size={[0.15, 0.02, 20]} />
       <Strip position={[-4, -0.25, 22]} size={[0.08, 0.02, 20]} mat="stripBV2" />
       <Strip position={[4, -0.25, 22]} size={[0.08, 0.02, 20]} mat="stripBV2" />

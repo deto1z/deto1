@@ -24,7 +24,7 @@ function Scene() {
       <fog attach="fog" args={['#06081a', 60, 330]} />
       <ambientLight intensity={0.55} color="#6f7cff" />
       <hemisphereLight args={['#4d6bff', '#1a0a3a', 0.5]} />
-      <directionalLight position={[12, 34, 20]} intensity={q === 'low' ? 0.5 : 0.3} color="#a9b9ff" castShadow={q !== 'low'}
+      <directionalLight position={[12, 34, 20]} intensity={q === 'low' ? 0.4 : 0.2} color="#a9b9ff" castShadow={q !== 'low'}
         shadow-mapSize={[2048, 2048]} shadow-camera-left={-24} shadow-camera-right={24} shadow-camera-top={20} shadow-camera-bottom={-20}
         shadow-camera-near={1} shadow-camera-far={90} shadow-bias={-0.0004} shadow-normalBias={0.04} shadow-radius={5} />
       {q === 'high' && <>
