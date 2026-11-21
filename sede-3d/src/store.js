@@ -23,7 +23,7 @@ export const useStore = create((set) => ({
   cutaway: false,         // quita el techo (vistas estratégicas)
   gfx: GFX0,
   setGfxOpt: (k, v) => set((st) => { const gfx = { ...st.gfx, [k]: v }; try { localStorage.setItem('detonador.gfx', JSON.stringify(gfx)); } catch (e) { /* sin almacenamiento */ } return { gfx }; }),
-  quality: (typeof window !== 'undefined' && ['low', 'medium', 'high'].includes(new URLSearchParams(location.search).get('q'))) ? new URLSearchParams(location.search).get('q') : mobile ? 'low' : 'high',
+  quality: q0,
   mobile,
   selected: null,
   joy: { x: 0, y: 0 },
