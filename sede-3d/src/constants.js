@@ -13,11 +13,13 @@ export const C = {
 
 // Estados previstos (Fase 3/4). En esta fase ningún agente está conectado.
 export const STATUS = {
-  offline:   { label: 'SIN CONECTAR', color: '#6b7088' },
-  available: { label: 'DISPONIBLE',   color: '#25e08a' },
-  working:   { label: 'TRABAJANDO',   color: '#2f7bff' },
-  waiting:   { label: 'ESPERANDO',    color: '#ffc531' },
-  done:      { label: 'TERMINADO',    color: '#b45bff' },
+  offline:   { label: 'DESCONECTADO', color: '#6b7088' },
+  available: { label: 'DISPONIBLE',   color: '#25e08a' },   // verde
+  working:   { label: 'TRABAJANDO',   color: '#2f7bff' },   // azul
+  reviewing: { label: 'REVISANDO',    color: '#ffc531' },   // amarillo
+  waiting:   { label: 'REVISANDO',    color: '#ffc531' },
+  done:      { label: 'COMPLETADO',   color: '#b45bff' },   // violeta
+  error:     { label: 'ERROR',        color: '#ff3b4d' },   // rojo
 };
 
 export const AGENTS = [

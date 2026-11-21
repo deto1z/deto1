@@ -66,8 +66,8 @@ export function getAgentView(id) {
   const s = useStore.getState();
   const raw = (s.preview ? PREVIEW[id] : s.agentState[id]) || {};
   const status = raw.status || 'offline';
-  const alert = raw.alert || null;
-  const action = alert ? 'look' : status === 'working' ? 'type' : status === 'done' ? 'talk' : status === 'waiting' ? 'look' : 'sit';
+  const alert = raw.alert || (status === 'error' ? (raw.detail || 'Error') : null);
+  const action = alert ? 'look' : status === 'working' ? 'type' : status === 'done' ? 'talk' : (status === 'waiting' || status === 'reviewing') ? 'look' : 'sit';
   return { status, st: STATUS[status] || STATUS.offline, task: raw.task || null, alert, action, active: status !== 'offline' && status !== 'available' };
 }
 

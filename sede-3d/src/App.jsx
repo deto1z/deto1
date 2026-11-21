@@ -11,6 +11,7 @@ import ChatPanel from './ChatPanel';
 import { startAmbient, stopAmbient } from './audio';
 import { useEffect, useRef } from 'react';
 import { useStore } from './store';
+import { initBackend } from './backend';
 import { animateMaterials } from './materials';
 
 function Tick() { useFrame(({ clock }) => animateMaterials(clock.elapsedTime)); return null; }
@@ -82,6 +83,7 @@ function Scene() {
 export default function App() {
   const q = useStore((s) => s.quality), gfx = useStore((s) => s.gfx), toast = useStore((s) => s.toast);
   const sound = useStore((s) => s.sound);
+  useEffect(() => { initBackend(); }, []);
   useEffect(() => { sound ? startAmbient() : stopAmbient(); }, [sound]);
   return (
     <div className="app">

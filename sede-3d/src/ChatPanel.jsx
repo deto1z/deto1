@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useStore } from './store';
 import { useChat, ORCH_CONNECTED } from './chatStore';
+import ServerPanel, { LoginForm } from './ServerPanel';
+import { useSrv, refresh, api } from './backend';
 import { AUTOMATION_AVAILABLE, loadSchedule, saveSchedule, nextRun, formatRun, fmtCountdown } from './schedule';
 
 const SR = typeof window !== 'undefined' ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
@@ -150,21 +152,29 @@ function History() {
 
 export default function ChatPanel() {
   const { chatOpen, setChatOpen, phase } = useStore();
-  const [tab, setTab] = useState('chat');
+  const [tab, setTab] = useState('chat'), [stopMsg, setStopMsg] = useState(null);
   const { orders, approvals, stopAll } = useChat();
-  const pend = orders.filter((o) => o.status === 'pendiente_envio').length, appr = approvals.filter((a) => !a.decision).length;
+  const srv = useSrv((s) => s.status), srvTasks = useSrv((s) => s.tasks), srvProps = useSrv((s) => s.proposals);
+  const live = srv === 'connected';
+  const pend = live ? srvTasks.filter((t) => ['queued', 'working', 'reviewing'].includes(t.status)).length : orders.filter((o) => o.status === 'pendiente_envio').length;
+  const appr = live ? srvProps.filter((p) => p.status === 'pending').length : approvals.filter((a) => !a.decision).length;
   if (phase !== 'app') return null;
   const tabs = [['chat', 'Chat'], ['ordenes', `Órdenes${pend ? ` (${pend})` : ''}`], ['aprob', `Aprobar${appr ? ` (${appr})` : ''}`], ['resumen', 'Resumen'], ['rutina', 'Rutina'], ['hist', 'Historial']];
-  const stop = () => { if (confirm('¿Detener todas las tareas pendientes y activas?')) { const n = stopAll(); alert(n ? `${n} orden(es) cancelada(s).` : 'No había tareas pendientes.'); } };
+  const stop = async () => {
+    if (stopMsg !== 'confirm') { setStopMsg('confirm'); setTimeout(() => setStopMsg((m) => (m === 'confirm' ? null : m)), 4000); return; }   // doble clic: confirm() no existe en el visor
+    let n; if (live) { try { n = (await api.post('/api/stop-all')).cancelled; refresh.tasks(); } catch { n = 0; } } else n = stopAll();
+    setStopMsg(n ? `${n} cancelada(s)` : 'Nada que detener'); setTimeout(() => setStopMsg(null), 2500);
+  };
   return (
     <>
       <button className="titan-fab" onClick={() => setChatOpen(!chatOpen)}><b>TX</b> {chatOpen ? 'Cerrar' : 'Hablar con TITAN X'}{!chatOpen && (pend + appr > 0) && <i>{pend + appr}</i>}</button>
       {chatOpen && (
         <section className="chat">
-          <header><div className="av">TX</div><div><h3>TITAN X</h3><small>CEO · tu único interlocutor · {ORCH_CONNECTED ? 'conectado' : 'orquestador sin conectar'}</small></div>
-            <button className="stop" onClick={stop} title="Detener todas las tareas">⏹ Detener</button></header>
+          <header><div className="av">TX</div><div><h3>TITAN X</h3><small>CEO · tu único interlocutor · {live ? 'servidor conectado' : srv === 'login' ? 'servidor: inicia sesión' : 'modo visual local · sin servidor'}</small></div>
+            <button className="stop" onClick={stop} title="Detener todas las tareas">{stopMsg === 'confirm' ? '¿Seguro? Clic otra vez' : stopMsg ?? '⏹ Detener'}</button></header>
+          {srv === 'login' ? <div className="body"><LoginForm /></div> : live ? <ServerPanel /> : <>
           <nav>{tabs.map(([k, l]) => <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}</nav>
-          <div className="body">{tab === 'chat' && <Chat />}{tab === 'ordenes' && <Orders />}{tab === 'aprob' && <Approvals />}{tab === 'resumen' && <Summary />}{tab === 'rutina' && <Routine />}{tab === 'hist' && <History />}</div>
+          <div className="body">{tab === 'chat' && <Chat />}{tab === 'ordenes' && <Orders />}{tab === 'aprob' && <Approvals />}{tab === 'resumen' && <Summary />}{tab === 'rutina' && <Routine />}{tab === 'hist' && <History />}</div></>}
         </section>
       )}
     </>

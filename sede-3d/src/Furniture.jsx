@@ -355,6 +355,7 @@ export function StationSign({ agent, position, rotation }) {
     if (v.alert) { ctx.fillStyle = '#ff3b4d'; ctx.font = `700 ${h * 0.1}px "Segoe UI",Arial,sans-serif`; ctx.fillText('⚠ ' + (v.alert || '').slice(0, 34), w / 2, h * 0.92); }
     else if (v.task) {
       ctx.fillStyle = '#eef'; ctx.font = `600 ${h * 0.095}px "Segoe UI",Arial,sans-serif`; ctx.fillText(v.task.title.slice(0, 36), w / 2, h * 0.76);
+      if (typeof v.task.steps === 'number') { ctx.fillStyle = '#9fb0ff'; ctx.font = `500 ${h * 0.075}px "Segoe UI",Arial,sans-serif`; ctx.textAlign = 'right'; ctx.fillText(`paso ${v.task.steps}`, w * 0.93, h * 0.58); ctx.textAlign = 'center'; }   // pasos reales, nunca un porcentaje inventado
       const bx = w * 0.1, bw = w * 0.8, by = h * 0.88;
       ctx.fillStyle = 'rgba(100,120,255,0.25)'; ctx.fillRect(bx, by, bw, h * 0.06);
       ctx.fillStyle = agent.color;

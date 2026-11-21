@@ -102,3 +102,6 @@ button.on { background:linear-gradient(135deg,var(--blue),var(--violet)); border
 .opt { display:flex; align-items:center; gap:8px; margin:8px 0; font-size:13px; } .opt small { color:#8e93ad; }
 .fps { position:fixed; top:8px; left:50%; transform:translateX(-50%); font:700 12px monospace; background:rgba(0,0,0,.6); padding:3px 8px; border-radius:6px; z-index:12; color:#6f6; }
 @media (max-width: 800px) { .dock { max-height:55vh; overflow:auto; } }
+.chat .list input:not([type=checkbox]), .chat .list select { background:rgba(20,24,56,.9); color:#e8ecff; border:1px solid var(--line); border-radius:8px; padding:6px 8px; font:inherit; max-width:100%; }
+.chat .list h4, .chat .list h5 { margin:10px 0 4px; color:#9fb0ff; } .chat .list code { color:#6fb4ff; }
+.chat .list .row input { flex:1; min-width:0; }
