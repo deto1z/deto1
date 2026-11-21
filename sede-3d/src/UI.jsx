@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useStore } from './store';
-import { AGENTS, PRESETS, STATUS } from './constants';
+import { AGENTS, PRESETS } from './constants';
+import { getAgentView } from './store';
 
 function Joystick() {
   const setJoy = useStore((s) => s.setJoy);
@@ -24,7 +25,7 @@ function AgentPanel() {
   const id = useStore((s) => s.selected), select = useStore((s) => s.select);
   const a = AGENTS.find((x) => x.id === id);
   if (!a) return null;
-  const st = STATUS.offline;
+  const v = useStore((x) => { void x.preview; void x.agentState; return getAgentView(a.id); }), st = v.st;
   return (
     <aside className="panel" style={{ '--c': a.color }}>
       <button className="x" onClick={() => select(null)} aria-label="Cerrar">×</button>
@@ -35,7 +36,7 @@ function AgentPanel() {
       <ul>{a.duties.map((d) => <li key={d}>{d}</li>)}</ul>
       <h3>Herramientas</h3>
       <ul>{a.tools.map((d) => <li key={d}>{d}</li>)}</ul>
-      <h3>Tareas</h3><p className="muted">Ninguna. El agente aún no está conectado.</p>
+      <h3>Tarea actual</h3><p className="muted">{v.task ? v.task.title : 'Ninguna. El agente aún no está conectado.'}</p>{v.alert && <p className="alertline">⚠ {v.alert}</p>}
       <h3>Historial de trabajos</h3><p className="muted">Vacío.</p>
       <p className="note">Fase 2: solo el edificio. El agente, sus tareas y su historial llegan en las Fases 3–4. No se muestra ningún resultado simulado.</p>
     </aside>
@@ -43,14 +44,17 @@ function AgentPanel() {
 }
 
 export default function UI() {
-  const { mode, setMode, level, setLevel, quality, setQuality, flyTo, mobile } = useStore();
+  const { mode, setMode, level, setLevel, quality, setQuality, flyTo, mobile, phase, sound, setSound, preview, setPreview } = useStore();
+  const [credits, setCredits] = useState(false);
   const [open, setOpen] = useState(!mobile);
   const act = (fn) => () => { fn(); if (mobile) setOpen(false); };
+  if (phase !== 'app') return null;
   return (
     <>
+      {preview && <div className="banner">VISTA PREVIA DE DISEÑO · estados de ejemplo para evaluar el aspecto, NO son tareas ni resultados reales</div>}
       <header className="brand">
         <b>DETONADOR</b><span>AI EMPIRE</span>
-        <small>Sede virtual 3D · Fase 2 · entorno de desarrollo</small>
+        <small>Sede virtual 3D · entorno de desarrollo</small>
       </header>
       <button className="burger" onClick={() => setOpen(!open)}>{open ? '✕' : '☰'}</button>
       {open && (
@@ -78,8 +82,23 @@ export default function UI() {
             <div className="row">{[['high', 'Alta'], ['medium', 'Media'], ['low', 'Baja']].map(([k, l]) => (
               <button key={k} className={quality === k ? 'on' : ''} onClick={() => setQuality(k)}>{l}</button>))}</div>
           </div>
+          <div className="grp">
+            <label>Extras</label>
+            <div className="row">
+              <button className={sound ? 'on' : ''} onClick={() => setSound(!sound)}>{sound ? '🔊 Sonido' : '🔇 Sonido'}</button>
+              <button className={preview ? 'on' : ''} onClick={() => setPreview(!preview)}>Vista previa de estados</button>
+              <button onClick={() => window.open('?casting', '_blank')}>Casting de personajes</button>
+              <button onClick={() => setCredits(true)}>Créditos</button>
+            </div>
+          </div>
         </nav>
       )}
+      {credits && <div className="credits" onClick={() => setCredits(false)}><div onClick={(e) => e.stopPropagation()}>
+        <h3>Créditos de modelos 3D</h3>
+        <p>Modelos GLB © Wayfair, LLC / Darmstadt Graphics Group GmbH / colaboradores, de <a href="https://github.com/KhronosGroup/glTF-Sample-Assets" target="_blank" rel="noreferrer">KhronosGroup/glTF-Sample-Assets</a>. Redimensionados y comprimidos.</p>
+        <ul><li>SheenChair — CC0 1.0</li><li>GlassVaseFlowers — CC0 1.0</li><li>GlamVelvetSofa — CC BY 4.0 (Wayfair)</li><li>SheenWoodLeatherSofa — CC BY 4.0 (Darmstadt Graphics Group)</li><li>DiffuseTransmissionPlant — CC BY 4.0 (Darmstadt Graphics Group)</li><li>IridescenceLamp — CC BY 4.0 (Wayfair)</li></ul>
+        <p>Resto del edificio, mobiliario gaming, avatares y texturas: creación propia (procedural).</p>
+        <button onClick={() => setCredits(false)}>Cerrar</button></div></div>}
       <div className="hint">
         {mode === 'orbit' && (mobile ? 'Arrastra para girar · pellizca para zoom · toca un escritorio' : 'Arrastra: girar 360° · Rueda: zoom · Clic derecho: mover · Clic en un escritorio: ver agente')}
         {mode === 'walk' && (mobile ? 'Joystick: moverte · Arrastra: mirar' : 'W A S D / flechas: moverte · Arrastra: mirar · Shift: correr · Esc: salir')}

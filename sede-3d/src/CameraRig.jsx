@@ -27,6 +27,7 @@ export default function CameraRig() {
   const walk = useRef({ x: 0, y: 0, z: 15, yaw: 0, pitch: 0, keys: new Set() });
   const tour = useRef({ t: 0 });
   const prevMode = useRef('orbit');
+  const enter = useRef(null);
 
   const curves = useMemo(() => ({
     pos: new THREE.CatmullRomCurve3(TOUR.map((p) => V(...p[0])), true, 'centripetal'),
@@ -56,6 +57,14 @@ export default function CameraRig() {
       ctrl.current.update();
     }
     if (mode === 'tour') tour.current.t = 0;
+    if (mode === 'enter') {
+      const d = camera.getWorldDirection(V(0, 0, 0)), p0 = camera.position.clone();
+      enter.current = {
+        t: 0,
+        pos: new THREE.CatmullRomCurve3([p0, V(0, 4.2, 28), V(0, 2.4, 16), V(0, 2.1, 10.5), V(0, 3.3, 6), V(0, 4.9, 3), V(0, 6.8, 0.2), V(0, 6.8, -2.6), V(0, 6.8, -3.9)], false, 'centripetal'),
+        look: new THREE.CatmullRomCurve3([p0.clone().addScaledVector(d, 30), V(0, 5, 0), V(0, 3.6, 4), V(0, 3, 0), V(0, 4, -2), V(0, 6.2, -6), V(0, 6.5, -8), V(0, 6.6, -11), V(0, 6.6, -11)], false, 'centripetal'),
+      };
+    }
     prevMode.current = mode;
   }, [mode, camera]);
 
@@ -89,7 +98,7 @@ export default function CameraRig() {
     };
   }, [gl]);
 
-  useFrame((_, dtRaw) => {
+  useFrame(({ clock }, dtRaw) => {
     const dt = Math.min(dtRaw, 0.05);
     const st = useStore.getState();
     const c = ctrl.current;
@@ -99,6 +108,22 @@ export default function CameraRig() {
       camera.position.lerp(a.pos, k); c.target.lerp(a.target, k);
       if (camera.position.distanceTo(a.pos) < 0.05 && c.target.distanceTo(a.target) < 0.05) anim.current = null;
       c.update();
+    }
+
+    if (st.mode === 'intro') {
+      const t = clock.elapsedTime, a = 0.8 * Math.sin(t * 0.11), R = 38 + 4 * Math.sin(t * 0.07), h = 7 + 2.5 * Math.sin(t * 0.09 + 1);
+      camera.position.set(R * Math.sin(a), h, R * Math.cos(a)); camera.lookAt(0, 4.6 + Math.sin(t * 0.13), 0);
+    }
+
+    if (st.mode === 'enter' && enter.current) {
+      const E = enter.current; E.t += dt / 13;
+      const u = Math.min(1, E.t), e = u * u * (3 - 2 * u);
+      camera.position.copy(E.pos.getPointAt(e)); camera.lookAt(E.look.getPointAt(e));
+      if (u >= 1) {
+        enter.current = null;
+        if (c) { c.target.set(0, 6.6, -11); c.update(); }
+        useStore.setState({ mode: 'orbit', phase: 'app', goto: null });
+      }
     }
 
     if (st.mode === 'tour') {

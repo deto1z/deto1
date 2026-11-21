@@ -45,8 +45,12 @@ export const PRESETS = {
   exterior: { label: 'Exterior',        pos: [36, 13, 40],  target: [0, 5, 0] },
   frente:   { label: 'Fachada',         pos: [0, 6, 40],    target: [0, 5, 0] },
   aerea:    { label: 'Vista aérea',     pos: [0, 52, 26],   target: [0, 2, 0] },
+  entrada:  { label: 'Entrada',         pos: [0, 2.0, 15.2], target: [0, 3.0, 2] },
   planta1:  { label: 'Planta 1',        pos: [-8.5, 3.3, 10.6], target: [2, 1.2, -3] },
   planta2:  { label: 'Planta 2',        pos: [0, 6.9, 5.5], target: [0, 6, -8] },
+  estacion: { label: 'Estación',        pos: [-6.4, 1.75, 10.4], target: [-9.4, 1.0, 7.2] },
   titan:    { label: 'Oficina TITAN X', pos: [0, 6.8, -3.9], target: [0, 6.6, -11] },
   juntas:   { label: 'Sala de juntas',  pos: [9.2, 6.9, -4.6], target: [12.5, 5.9, -9.5] },
 };
+
+export const TITAN_INFO = { id: 'titan-x', name: 'TITAN X', role: 'CEO · Director de la empresa', color: '#2f7bff' };

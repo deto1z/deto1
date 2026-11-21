@@ -1,14 +1,23 @@
 import * as THREE from 'three';
 import { C } from './constants';
+import { marbleTexture, woodTexture, repeatOf, keyboardTexture } from './textures';
+
+const marbleT = marbleTexture(512), woodT = woodTexture(512);
 
 const std = (o) => new THREE.MeshStandardMaterial(o);
+export { marbleT, woodT };
 export const M = {
   black:   std({ color: '#070813', metalness: 0.9, roughness: 0.35 }),
   metal:   std({ color: '#12142a', metalness: 0.95, roughness: 0.25 }),
   chrome:  std({ color: '#8d93b8', metalness: 1, roughness: 0.15 }),
   white:   std({ color: '#e9edff', metalness: 0.2, roughness: 0.4 }),
   floor1:  std({ color: '#0a0c1c', metalness: 0.6, roughness: 0.18 }),
-  floor2:  std({ color: '#0c0b20', metalness: 0.6, roughness: 0.2 }),
+  floor2:  new THREE.MeshStandardMaterial({ map: repeatOf(marbleT, 4, 2), color: '#9aa3d8', metalness: 0.35, roughness: 0.14 }),
+  marble:  std({ map: marbleT, color: '#aab4ff', metalness: 0.3, roughness: 0.1 }),
+  wood:    std({ map: repeatOf(woodT, 1, 1), color: '#c9a58a', metalness: 0.05, roughness: 0.45 }),
+  woodWall: std({ map: repeatOf(woodT, 3, 1), color: '#9d7f6b', metalness: 0.05, roughness: 0.55 }),
+  keys:    new THREE.MeshBasicMaterial({ map: keyboardTexture(), toneMapped: false }),
+  led:     new THREE.MeshBasicMaterial({ color: '#ff2a3a', toneMapped: false }),
   wall:    std({ color: '#0a0b18', metalness: 0.7, roughness: 0.45 }),
   seat:    std({ color: '#0d0d14', metalness: 0.1, roughness: 0.8 }),
   glass:   new THREE.MeshPhysicalMaterial({ color: '#7fb4ff', transparent: true, opacity: 0.13, metalness: 0.2, roughness: 0.04, depthWrite: false, side: THREE.DoubleSide }),

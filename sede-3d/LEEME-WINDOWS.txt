@@ -1,0 +1,10 @@
+DETONADOR AI EMPIRE - Sede virtual 3D (entorno de desarrollo)
+
+1) Instala Node.js (version LTS) desde https://nodejs.org  (solo la primera vez).
+2) Haz doble clic en  INICIAR_DETONADOR.bat
+   - La primera vez instalara los componentes (necesita internet).
+   - Despues se abrira tu navegador en http://localhost:5173
+3) Para cerrar: cierra la ventana negra, o ejecuta DETENER_DETONADOR.bat.
+
+Recomendado: Google Chrome o Microsoft Edge (para la entrada por voz).
+Esta aplicacion es independiente de DETONADOR CLIPS AI y no la modifica.

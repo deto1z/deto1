@@ -33,6 +33,13 @@ Navegador (sede-3d, React + R3F)  ⇄  API REST + WebSocket  ⇄  Orquestador (N
 - Navegación: órbita 360°/zoom, 7 vistas preestablecidas, caminar (WASD / joystick táctil, escalera y colisiones), recorrido cinematográfico, filtro de plantas, calidad Alta/Media/Baja (móvil arranca en Baja).
 - Clic en un escritorio: panel del agente (sin conectar, sin tareas simuladas).
 
+## Fase 2b · Revisión visual y preparación (actual)
+- Mármol negro y madera oscura (texturas procedurales), sombras suaves, reflejos, 6 modelos GLB con licencia (ver CREDITOS.md), ciudad nocturna con ventanas, tráfico y partículas.
+- Entrada cinematográfica (fachada → ENTRAR A MI EMPRESA → vuelo hasta el despacho de TITAN X), sonido ambiental opcional.
+- 7 personajes con rig y animaciones (PERSONAJES.md). Estaciones reaccionan a estados reales (luz, avatar, tarea, alerta).
+- Chat privado con TITAN X (voz, adjuntos, historial, órdenes, aprobaciones, detener, resumen). **Sin backend**: las órdenes quedan en cola local, nada se simula.
+- Rutina de 3 reuniones (7:00, 12:00, 18:00 America/New_York), editable, **bloqueada** hasta la Fase 5 (`node test-schedule.mjs`).
+
 ## Pendiente
 Avatares y animaciones (Fase 3, GLB), órdenes/tareas (4), herramientas reales (5), integración (6).
 
