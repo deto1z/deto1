@@ -17,6 +17,7 @@ function Loaded({ file, height, width, position, rotation, tint }) {
   const { scene } = useGLTF(`${import.meta.env.BASE_URL}models/${file}.glb`);
   const obj = useMemo(() => {
     const o = SkeletonUtils.clone(scene);
+    const lights = []; o.traverse((x) => { if (x.isLight) lights.push(x); }); lights.forEach((l) => { l.target?.parent?.remove(l.target); l.parent?.remove(l); });   // los GLB traen luces incrustadas: se descartan
     const box = new THREE.Box3().setFromObject(o), size = box.getSize(new THREE.Vector3()), ctr = box.getCenter(new THREE.Vector3());
     const k = height ? height / size.y : width ? width / Math.max(size.x, size.z) : 1;
     const g = new THREE.Group(); g.add(o);
