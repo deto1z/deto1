@@ -40,7 +40,11 @@ export default function CameraRig() {
   }, [camera]);
 
   // Salto a un preset de cámara
-  useEffect(() => { if (goto) anim.current = { pos: V(...goto.pos), target: V(...goto.target), fov: goto.fov ?? 55 }; }, [goto]);
+  useEffect(() => {
+    if (!goto) return;
+    anim.current = { pos: V(...goto.pos), target: V(...goto.target), fov: goto.fov ?? 55 };
+    if (goto.jump && ctrl.current) { camera.position.copy(anim.current.pos); ctrl.current.target.copy(anim.current.target); camera.fov = anim.current.fov; camera.updateProjectionMatrix(); ctrl.current.update(); anim.current = null; }   // salto instantáneo (pruebas)
+  }, [goto, camera]);
 
   // Cambio de modo
   useEffect(() => {

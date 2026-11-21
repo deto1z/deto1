@@ -38,6 +38,7 @@ export const useStore = create((set) => ({
   setPhase: (phase) => set({ phase }),
   setMode: (mode) => set({ mode }),
   flyTo: (p) => set({ mode: 'orbit', goto: { ...p, id: Math.random() }, level: p.level ?? 'all', cutaway: !!p.cutaway }),
+  jumpTo: (p) => set({ mode: 'orbit', goto: { ...p, jump: true, id: Math.random() }, level: p.level ?? 'all', cutaway: !!p.cutaway }),
   setLevel: (level) => set({ level }),
   setQuality: (quality) => { const gfx = { ...PRESETS_GFX[quality], fps: false }; try { localStorage.setItem('detonador.gfx', JSON.stringify(gfx)); localStorage.setItem('detonador.q', quality); } catch (e) { /* sin almacenamiento */ } set({ quality, gfx }); },
   select: (selected) => set({ selected }),

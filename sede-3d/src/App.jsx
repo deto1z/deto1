@@ -30,7 +30,7 @@ function AutoQuality() {
     const S = st.current; if (S.done) return; S.age += dt; if (S.age < 8) return;
     S.n++; S.t += dt;
     if (S.t >= 5) {
-      S.done = true; let manual = false; try { manual = !!localStorage.getItem('detonador.q'); } catch (e) { /* nada */ }
+      S.done = true; let manual = new URLSearchParams(location.search).has('q'); try { manual = manual || !!localStorage.getItem('detonador.q'); } catch (e) { /* nada */ }
       const fps = S.n / S.t, q = useStore.getState().quality;
       if (!manual && fps < 20 && (q === 'high' || q === 'medium')) { useStore.getState().setQuality(q === 'high' ? 'medium' : 'low'); try { localStorage.removeItem('detonador.q'); } catch (e) { /* nada */ } useStore.setState({ toast: `Rendimiento bajo (${Math.round(fps)} FPS): calidad bajada automáticamente. Cámbiala en ⚙ Gráficos.` }); }
     }

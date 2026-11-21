@@ -9,14 +9,14 @@ import { Screen } from './Screen';
 const B = ({ p, s, m, r }) => <mesh position={p} rotation={r} material={m}><boxGeometry args={s} /></mesh>;
 
 // Truss de focos sobre el atrio (barras + focos con haz de luz)
-export function Truss({ y = 9.3, z = 5, x0 = -12, x1 = 12, n = 7 }) {
+export function Truss({ y = 9.6, z = 5, x0 = -12, x1 = 12, n = 7 }) {
   const beams = useRef([]);
   useFrame(({ clock }) => beams.current.forEach((b, i) => { if (b) b.material.opacity = 0.05 + 0.03 * Math.sin(clock.elapsedTime * 1.3 + i); }));
   const cols = ['#2f7bff', '#9b2bff', '#2ee6ff', '#b45bff'];
   return (
     <group position={[0, y, z]}>
-      <B p={[0, 0, 0.18]} s={[x1 - x0, 0.06, 0.06]} m={M.chrome} /><B p={[0, 0, -0.18]} s={[x1 - x0, 0.06, 0.06]} m={M.chrome} /><B p={[0, 0.3, 0]} s={[x1 - x0, 0.06, 0.06]} m={M.chrome} />
-      {Array.from({ length: 24 }, (_, i) => <B key={i} p={[x0 + 0.5 + i * ((x1 - x0 - 1) / 23), 0.15, 0]} s={[0.03, 0.34, 0.36]} m={M.metal} r={[0, 0, i % 2 ? 0.5 : -0.5]} />)}
+      <B p={[0, 0, 0.18]} s={[x1 - x0, 0.03, 0.03]} m={M.chrome} /><B p={[0, 0, -0.18]} s={[x1 - x0, 0.03, 0.03]} m={M.chrome} /><B p={[0, 0.3, 0]} s={[x1 - x0, 0.03, 0.03]} m={M.chrome} />
+      {Array.from({ length: 24 }, (_, i) => <B key={i} p={[x0 + 0.5 + i * ((x1 - x0 - 1) / 23), 0.15, 0]} s={[0.015, 0.34, 0.36]} m={M.metal} r={[0, 0, i % 2 ? 0.5 : -0.5]} />)}
       {Array.from({ length: n }, (_, i) => {
         const x = x0 + 2 + i * ((x1 - x0 - 4) / (n - 1)), c = cols[i % cols.length];
         return (

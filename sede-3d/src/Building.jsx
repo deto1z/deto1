@@ -59,6 +59,7 @@ function Mullions() {
 
 function Shell({ level }) {
   const cutaway = useStore((s) => s.cutaway);
+  useEffect(() => { M.glass.opacity = cutaway ? 0.045 : 0.16; M.glassDark.opacity = cutaway ? 0.1 : 0.45; }, [cutaway]);
   const gh = 10;
   return (
     <group>
