@@ -7,3 +7,9 @@ Aplicación independiente (no modifica DETONADOR CLIPS AI). Entorno de desarroll
 - Documentos: `CORRECCIONES.md`, `INVENTARIO_MODELOS.md` (licencias), `RENDIMIENTO.md`, `ARQUITECTURA.md`, `PERSONAJES.md`, `CREDITOS.md`.
 - Pruebas: `node test-walk.mjs`, `node test-schedule.mjs`, `node test-routes.mjs`.
 - Respaldos (carpeta `../respaldos/`): versión Fase 2 inicial y versión previa a las correcciones v2.
+
+---
+## Fase 3 (staging): servidor, memoria y agentes
+Ver `ARQUITECTURA_FASE3.md`, `PRESUPUESTO_APIS.md`, `SEGURIDAD.md`, `PRUEBA_REAL.md`.
+Windows: `INICIAR_STAGING.bat` (Node ≥ 22.5). Manual: `npm run setup-owner` → `npm run start:staging` → http://127.0.0.1:8787. Pruebas: `npm run test:server`.
+**Ningún servicio de pago está activo y nada se publica.**
