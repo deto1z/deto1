@@ -34,7 +34,7 @@ function Scene() {
       <Environment resolution={64}>
         <Lightformer form="rect" intensity={1.6} color="#2f6bff" position={[0, 6, 14]} scale={[18, 4, 1]} />
         <Lightformer form="rect" intensity={1.6} color="#9b2bff" position={[0, 6, -14]} scale={[18, 4, 1]} />
-        <Lightformer form="ring" intensity={2} color="#ffffff" position={[0, 14, 0]} rotation-x={Math.PI / 2} scale={8} />
+        <Lightformer form="ring" intensity={0.5} color="#7f9bff" position={[0, 14, 0]} rotation-x={Math.PI / 2} scale={8} />
       </Environment>
       <Stars radius={260} depth={60} count={q === 'low' ? 800 : 3000} factor={5} fade speed={0.6} />
       <Tick />

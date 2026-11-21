@@ -252,7 +252,7 @@ function Floor2() {
         {/* holograma gigante */}
         <group position={[0, y + 4.1, -5.8]}>
           <Screen w={5.2} h={1.9} res={256} draw={drawHolo} fps={8} frame={false} additive />
-          <mesh position={[0, -2.5, 0]} rotation={[-Math.PI / 2, 0, 0]} material={M.stripBV2}><ringGeometry args={[0.8, 0.9, 40]} /></mesh>
+          <mesh position={[0, -4.08, 0]} rotation={[-Math.PI / 2, 0, 0]} material={M.stripBV2}><ringGeometry args={[0.8, 0.9, 40]} /></mesh>
         </group>
         {/* pantallas de rendimiento y panel de tareas */}
         {[0, 1, 2].map((i) => (
@@ -375,7 +375,7 @@ function City() {
 function Exterior() {
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.32, 0]}><circleGeometry args={[420, 48]} /><meshStandardMaterial color="#04050c" metalness={0.8} roughness={0.5} /></mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.32, 0]}><circleGeometry args={[420, 48]} /><meshStandardMaterial color="#04050c" metalness={0.8} roughness={0.6} envMapIntensity={0.25} /></mesh>
       <Grid position={[0, -0.3, 0]} args={[400, 400]} cellSize={2} cellThickness={0.5} cellColor="#16205a" sectionSize={10} sectionThickness={1} sectionColor="#3a1f8a" fadeDistance={160} fadeStrength={1.5} infiniteGrid />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.28, 28]}><planeGeometry args={[40, 32]} /><meshStandardMaterial map={floorMarble} color="#5f678f" metalness={0.5} roughness={0.5} envMapIntensity={0.15} /></mesh>
       <Strip position={[0, -0.25, 22]} size={[0.15, 0.02, 20]} />
