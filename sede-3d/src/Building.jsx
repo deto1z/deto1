@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { MeshReflectorMaterial, Grid } from '@react-three/drei';
 import { mergeBufferGeometries as mergeGeometries } from 'three-stdlib';
 import Agents from './Agents';
+import { Truss, OnAir, Acoustic, Softbox, Mixer } from './Studio';
 import { Station } from './Stations';
 import { Model } from './Asset';
 import * as THREE from 'three';
@@ -49,14 +50,15 @@ function Mullions() {
         </group>
       ))}
       {/* tiras de luz en travesaños */}
-      {[-1, 1].map((s) => (<Strip key={s} position={[s * (HX - 0.14), 5, 0]} size={[0.03, 0.08, D]} />))}
-      <Strip position={[0, 5, HZ - 0.14]} size={[W, 0.08, 0.03]} mat="stripBV2" />
-      <Strip position={[0, 9.9, HZ - 0.14]} size={[W, 0.08, 0.03]} />
+      {[-1, 1].map((s) => [0, 1, 2, 3, 4, 5].map((k) => (<Strip key={`${s}${k}`} position={[s * (HX - 0.14), 5, -10 + k * 4 + 2]} size={[0.03, 0.08, 4]} mat={'chase' + ((k + (s > 0 ? 3 : 0)) % 8)} />)))}
+      {Array.from({ length: 8 }, (_, k) => <Strip key={k} position={[-14 + k * 4, 5, HZ - 0.14]} size={[4, 0.08, 0.03]} mat={"chase" + k} />)}
+      {Array.from({ length: 8 }, (_, k) => <Strip key={"t" + k} position={[-14 + k * 4, 9.9, HZ - 0.14]} size={[4, 0.08, 0.03]} mat={"chase" + ((k + 4) % 8)} />)}
     </group>
   );
 }
 
 function Shell({ level }) {
+  const cutaway = useStore((s) => s.cutaway);
   const gh = 10;
   return (
     <group>
@@ -81,7 +83,7 @@ function Shell({ level }) {
       {[-12, -6, 6, 12].map((x) => <Strip key={x} position={[x, 5, -HZ + 0.03]} size={[0.06, 9.8, 0.03]} mat={x < 0 ? 'stripBV' : 'stripBV2'} />)}
       <Mullions />
       {/* techo de cristal oscuro */}
-      {level === 'all' && (
+      {level === 'all' && !cutaway && (
         <group>
           <mesh position={[0, 10.1, 0]} material={M.glassDark}><boxGeometry args={[W + 0.6, 0.2, D + 0.6]} /></mesh>
           {Array.from({ length: 7 }, (_, i) => (
@@ -116,7 +118,7 @@ function Dust() {
 }
 
 function Floor1() {
-  const hq = useStore((s) => s.quality === 'high');
+  const hq = useStore((s) => s.gfx.reflections);
   return (
     <group>
       <mesh position={[0, -0.15, 0]} material={M.floor1}><boxGeometry args={[W, 0.3, D]} /></mesh>
@@ -142,6 +144,8 @@ function Floor1() {
       </group>
       <Strip position={[0, 0.9, -11.78]} size={[16, 0.05, 0.04]} />
       <Dust />
+      <Truss z={6.2} />
+      <Truss z={1.2} x0={-13} x1={13} n={6} />
       {/* Núcleos de IA */}
       <AICore position={[-4.5, 0, -9]} />
       <AICore position={[4.5, 0, -9]} />
@@ -265,6 +269,11 @@ function Floor2() {
           <RingLight position={[-0.55, 0.785, -0.15]} rotation={[0, 0.5, 0]} />
         </group>
         <CineCamera position={[-15.1, y, -9.6]} rotation={[0, Math.PI * 0.35, 0]} />
+        <OnAir position={[-6.2, y + 3.7, -4.8]} rotation={[0, -Math.PI / 2, 0]} />
+        <Acoustic position={[-15.7, y + 1.9, -7.6]} rotation={[0, Math.PI / 2, 0]} w={3.2} h={2.4} />
+        <Acoustic position={[-7.6, y + 2.2, -11.85]} w={1.2} h={2.4} /><Acoustic position={[-16.4 + 0.1, y + 2.2, -11.85]} w={1.2} h={2.4} />
+        <Softbox position={[-13.4, y, -2.9]} rotation={[0, Math.PI * 0.2, 0]} /><Softbox position={[-16.0, y, -5.6]} rotation={[0, Math.PI * 0.45, 0]} tint="#cfd8ff" />
+        <Mixer position={[-9.4, y, -3.9]} rotation={[0, Math.PI, 0]} />
         <pointLight position={[-12, y + 4, -7]} color="#9b2bff" intensity={15} distance={14} decay={2} />
         <Strip position={[-12, y + 4.95, -7.6]} size={[7.6, 0.05, 0.05]} />
       </group>
@@ -293,7 +302,7 @@ function City() {
     const geos = [];
     for (let i = 0; i < 260; i++) {
       const near = i < 90, a = (i / 260) * Math.PI * 2 * (near ? 2.9 : 1) + Math.sin(i * 12.9) * 0.08;
-      const r = near ? 105 + (Math.abs(Math.sin(i * 78.2)) * 55) : 175 + (Math.abs(Math.sin(i * 31.7)) * 130);
+      const r = near ? 128 + (Math.abs(Math.sin(i * 78.2)) * 50) : 190 + (Math.abs(Math.sin(i * 31.7)) * 130);
       const h = (near ? 16 : 30) + Math.abs(Math.sin(i * 3.7)) * (near ? 46 : 120), w = 6 + Math.abs(Math.sin(i * 9.1)) * 10, d = 6 + Math.abs(Math.sin(i * 5.3)) * 10;
       const x = Math.cos(a) * r, z = Math.sin(a) * r;
       if (Math.abs(x) < 26 && z > 20) continue;           // corredor de la avenida
@@ -311,7 +320,7 @@ function City() {
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
     for (let i = 0; i < N; i++) {
-      const lane = i % 3, dir = lane === 1 ? -1 : 1, R = 66 + lane * 8, a = (i / N) * 6.283 * 3 % 6.283 + t * 0.045 * dir * (1 + lane * 0.15);
+      const lane = i % 3, dir = lane === 1 ? -1 : 1, R = 96 + lane * 7, a = (i / N) * 6.283 * 3 % 6.283 + t * 0.045 * dir * (1 + lane * 0.15);
       dummy.position.set(Math.cos(a) * R, 0.25, Math.sin(a) * R); dummy.rotation.set(0, -a + (dir > 0 ? 0 : Math.PI), 0); dummy.updateMatrix(); cars.current.setMatrixAt(i, dummy.matrix);
     }
     cars.current.instanceMatrix.needsUpdate = true;
@@ -319,9 +328,9 @@ function City() {
   return (
     <group>
       <mesh geometry={geo}><meshStandardMaterial color="#070916" metalness={0.8} roughness={0.3} emissive="#ffffff" emissiveMap={tex} emissiveIntensity={0.55} /></mesh>
-      {[66, 74, 82].map((r) => <mesh key={r} rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.27, 0]}><ringGeometry args={[r - 2.2, r + 2.2, 96]} /><meshStandardMaterial color="#05060e" roughness={0.4} metalness={0.7} /></mesh>)}
+      {[96, 103, 110].map((r) => <mesh key={r} rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.27, 0]}><ringGeometry args={[r - 2.2, r + 2.2, 96]} /><meshStandardMaterial color="#05060e" roughness={0.4} metalness={0.7} /></mesh>)}
       <instancedMesh ref={cars} args={[null, null, N]} frustumCulled={false}>
-        <boxGeometry args={[0.9, 0.25, 2]} /><meshBasicMaterial color={new THREE.Color('#ffe9c9').multiplyScalar(1.6)} toneMapped={false} />
+        <boxGeometry args={[0.9, 0.25, 2]} /><meshBasicMaterial color={new THREE.Color('#ffe9c9').multiplyScalar(0.85)} toneMapped={false} />
       </instancedMesh>
     </group>
   );
@@ -373,7 +382,7 @@ function mergeStatic(root, shadows) {
 }
 
 function Shadowize({ children }) {
-  const ref = useRef(), q = useStore((s) => s.quality), level = useStore((s) => s.level), phase = useStore((s) => s.phase);
+  const ref = useRef(), q = useStore((s) => (s.gfx.shadows ? 'on' : 'low')), level = useStore((s) => s.level);
   useEffect(() => {
     let undo = null;
     const id = setTimeout(() => {

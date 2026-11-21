@@ -98,3 +98,7 @@ button.on { background:linear-gradient(135deg,var(--blue),var(--violet)); border
 .alertline { color:#ff6b7a; font-size:13px; margin:6px 0 0; }
 .cast-bar { position:fixed; left:50%; bottom:18px; transform:translateX(-50%); display:flex; flex-wrap:wrap; gap:6px; justify-content:center; padding:10px; background:var(--glass); border:1px solid var(--line); border-radius:14px; max-width:calc(100vw - 20px); }
 .cast-title { position:fixed; top:14px; left:16px; } .cast-title b { font-size:20px; letter-spacing:3px; color:#6fb4ff; } .cast-title small { display:block; color:#8e9bd0; font-size:11px; margin-top:4px; max-width:60vw; }
+.hl { background:linear-gradient(135deg,rgba(31,107,255,.55),rgba(155,43,255,.55)); border-color:#6fb4ff; font-weight:700; }
+.opt { display:flex; align-items:center; gap:8px; margin:8px 0; font-size:13px; } .opt small { color:#8e93ad; }
+.fps { position:fixed; top:8px; left:50%; transform:translateX(-50%); font:700 12px monospace; background:rgba(0,0,0,.6); padding:3px 8px; border-radius:6px; z-index:12; color:#6f6; }
+@media (max-width: 800px) { .dock { max-height:55vh; overflow:auto; } }

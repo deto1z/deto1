@@ -20,7 +20,7 @@ export const M = {
   led:     new THREE.MeshBasicMaterial({ color: '#ff2a3a', toneMapped: false }),
   wall:    std({ color: '#0a0b18', metalness: 0.7, roughness: 0.45 }),
   seat:    std({ color: '#0d0d14', metalness: 0.1, roughness: 0.8 }),
-  glass:   new THREE.MeshPhysicalMaterial({ color: '#7fb4ff', transparent: true, opacity: 0.13, metalness: 0.2, roughness: 0.04, depthWrite: false, side: THREE.DoubleSide }),
+  glass:   new THREE.MeshPhysicalMaterial({ color: '#8fc0ff', transparent: true, opacity: 0.16, metalness: 0.35, roughness: 0.02, clearcoat: 1, clearcoatRoughness: 0.03, envMapIntensity: 2.4, ior: 1.5, specularIntensity: 1, depthWrite: false, side: THREE.DoubleSide }),
   glassDark: new THREE.MeshPhysicalMaterial({ color: '#10163a', transparent: true, opacity: 0.45, metalness: 0.5, roughness: 0.05, depthWrite: false, side: THREE.DoubleSide }),
   holo:    new THREE.MeshBasicMaterial({ color: C.cyan, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }),
   // Materiales que se animan cada frame (ver Animator)
@@ -32,10 +32,16 @@ export const M = {
   neonViolet: new THREE.MeshBasicMaterial({ color: new THREE.Color(C.violet).multiplyScalar(2.4), toneMapped: false }),
 };
 
-const a = new THREE.Color(C.blue), b = new THREE.Color(C.violet), tmp = new THREE.Color();
+const CH = 8;
+for (let i = 0; i < CH; i++) M['chase' + i] = new THREE.MeshBasicMaterial({ color: new THREE.Color(C.blue).multiplyScalar(2.2), toneMapped: false });
+const a = new THREE.Color(C.blue), b = new THREE.Color(C.violet), cy = new THREE.Color(C.cyan), tmp = new THREE.Color();
 export function animateMaterials(t) {
   const k = (Math.sin(t * 0.8) + 1) / 2;
   M.stripBV.color.copy(tmp.copy(a).lerp(b, k)).multiplyScalar(2.2);
   M.stripBV2.color.copy(tmp.copy(b).lerp(a, k)).multiplyScalar(2.2);
-  M.rgb.color.setHSL((t * 0.25) % 1, 1, 0.55).multiplyScalar(1.8);
+  for (let i = 0; i < CH; i++) {   // onda de color que recorre las tiras (azul → violeta → cian)
+    const w = (Math.sin(t * 1.6 - i * 0.8) + 1) / 2, c2 = (Math.sin(t * 0.7 - i * 0.5) + 1) / 2;
+    M['chase' + i].color.copy(a).lerp(b, w).lerp(cy, Math.pow(c2, 6) * 0.7).multiplyScalar(1.5 + w * 1.0);
+  }
+  M.rgb.color.setHSL((t * 0.25) % 1, 1, 0.5).multiplyScalar(1.05);
 }

@@ -41,16 +41,20 @@ export const AGENTS = [
     tools: ['APIs de analítica (requieren tu autorización)'] },
 ];
 
+// Vistas de cámara. level/cutaway: planta visible y techo oculto; fov: apertura (isométrica = estrecha)
 export const PRESETS = {
+  general:  { label: 'Vista general',   pos: [38, 31, 40],  target: [0, 2.5, 0],  fov: 30, cutaway: true },
   exterior: { label: 'Exterior',        pos: [36, 13, 40],  target: [0, 5, 0] },
-  frente:   { label: 'Fachada',         pos: [0, 6, 40],    target: [0, 5, 0] },
-  aerea:    { label: 'Vista aérea',     pos: [0, 52, 26],   target: [0, 2, 0] },
   entrada:  { label: 'Entrada',         pos: [0, 2.0, 15.2], target: [0, 3.0, 2] },
-  planta1:  { label: 'Planta 1',        pos: [-8.5, 3.3, 10.6], target: [2, 1.2, -3] },
-  planta2:  { label: 'Planta 2',        pos: [0, 6.9, 5.5], target: [0, 6, -8] },
-  estacion: { label: 'Estación',        pos: [-6.4, 1.75, 10.4], target: [-9.4, 1.0, 7.2] },
-  titan:    { label: 'Oficina TITAN X', pos: [0, 6.8, -3.9], target: [0, 6.6, -11] },
+  planta1:  { label: 'Planta 1',        pos: [0, 27, 21],   target: [0, 0, 0],    level: '1', cutaway: true },
+  planta2:  { label: 'Planta 2',        pos: [0, 25, 22],   target: [0, 5, -4],   level: '2', cutaway: true },
+  titan:    { label: 'Oficina del CEO', pos: [0, 6.5, -5.0], target: [0, 6.3, -11] },
   juntas:   { label: 'Sala de juntas',  pos: [9.2, 6.9, -4.6], target: [12.5, 5.9, -9.5] },
 };
+// Vista individual de cada trabajador (cámara cercana, de frente al escritorio)
+export const WORKER_VIEWS = [
+  ...AGENTS.map((a) => { const left = a.pos[0] < 0, x = a.pos[0], z = a.pos[1]; return { id: a.id, label: a.name, pos: [x + (left ? 4.3 : -4.3), 2.1, z + 2.9], target: [x + (left ? 0.2 : -0.2), 1.15, z - 0.1], color: a.color }; }),
+  { id: 'titan-x', label: 'TITAN X', pos: [0, 6.5, -5.0], target: [0, 6.2, -10.5], color: '#2f7bff' },
+];
 
 export const TITAN_INFO = { id: 'titan-x', name: 'TITAN X', role: 'CEO · Director de la empresa', color: '#2f7bff' };

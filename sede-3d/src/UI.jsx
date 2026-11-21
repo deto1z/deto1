@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useStore } from './store';
-import { AGENTS, PRESETS } from './constants';
+import { AGENTS, PRESETS, WORKER_VIEWS } from './constants';
 import { getAgentView } from './store';
 
 function Joystick() {
@@ -43,9 +43,27 @@ function AgentPanel() {
   );
 }
 
+function GraphicsPanel({ onClose }) {
+  const { quality, setQuality, gfx, setGfxOpt } = useStore();
+  const Opt = ({ k, l, hint }) => <label className="opt"><input type="checkbox" checked={gfx[k]} onChange={(e) => setGfxOpt(k, e.target.checked)} /> {l}<small>{hint}</small></label>;
+  return (
+    <div className="credits" onClick={onClose}><div onClick={(e) => e.stopPropagation()}>
+      <h3>Opciones gráficas</h3>
+      <p>Calidad general (ajusta todo a la vez)</p>
+      <div className="row">{[['high', 'Alta'], ['medium', 'Media'], ['low', 'Baja'], ['min', 'Mínima']].map(([k, l]) => <button key={k} className={quality === k ? 'on' : ''} onClick={() => setQuality(k)}>{l}</button>)}</div>
+      <p>Ajustes finos</p>
+      <Opt k="shadows" l="Sombras suaves" hint=" · cuesta rendimiento" /><Opt k="reflections" l="Reflejos en el suelo" hint=" · cuesta mucho" />
+      <Opt k="bloom" l="Brillo neón (bloom)" hint="" /><Opt k="fps" l="Mostrar FPS" hint="" />
+      <label className="opt">Resolución<input type="range" min="0.5" max="1" step="0.25" value={gfx.res} onChange={(e) => setGfxOpt('res', +e.target.value)} /> {Math.round(gfx.res * 100)}%</label>
+      <p className="muted">Tu elección se guarda en este navegador. Si la app va lenta, baja a Media o Baja.</p>
+      <button onClick={onClose}>Cerrar</button>
+    </div></div>
+  );
+}
+
 export default function UI() {
-  const { mode, setMode, level, setLevel, quality, setQuality, flyTo, mobile, phase, sound, setSound, preview, setPreview } = useStore();
-  const [credits, setCredits] = useState(false);
+  const { mode, setMode, level, setLevel, flyTo, mobile, phase, sound, setSound, preview, setPreview, placeOverride, setPlace } = useStore();
+  const [credits, setCredits] = useState(false), [gfx, setGfx] = useState(false);
   const [open, setOpen] = useState(!mobile);
   const act = (fn) => () => { fn(); if (mobile) setOpen(false); };
   if (phase !== 'app') return null;
@@ -60,15 +78,20 @@ export default function UI() {
       {open && (
         <nav className="dock">
           <div className="grp">
-            <label>Vistas</label>
+            <label>Cámara estratégica</label>
             <div className="row">{Object.entries(PRESETS).map(([k, p]) => (
-              <button key={k} onClick={act(() => flyTo(p))}>{p.label}</button>))}</div>
+              <button key={k} className={k === 'general' ? 'hl' : ''} onClick={act(() => flyTo(p))}>{p.label}</button>))}</div>
+          </div>
+          <div className="grp">
+            <label>Trabajadores (vista individual)</label>
+            <div className="row">{WORKER_VIEWS.map((w) => (
+              <button key={w.id} style={{ borderColor: w.color }} onClick={act(() => flyTo(w))}>{w.label}</button>))}</div>
           </div>
           <div className="grp">
             <label>Modo</label>
             <div className="row">
               <button className={mode === 'orbit' ? 'on' : ''} onClick={act(() => setMode('orbit'))}>Orbitar</button>
-              <button className={mode === 'walk' ? 'on' : ''} onClick={act(() => setMode('walk'))}>Caminar</button>
+              <button className={mode === 'walk' ? 'on' : ''} onClick={act(() => setMode('walk'))}>Caminar (opcional)</button>
               <button className={mode === 'tour' ? 'on' : ''} onClick={act(() => setMode('tour'))}>Recorrido cine</button>
             </div>
           </div>
@@ -78,21 +101,23 @@ export default function UI() {
               <button key={k} className={level === k ? 'on' : ''} onClick={act(() => setLevel(k))}>{l}</button>))}</div>
           </div>
           <div className="grp">
-            <label>Calidad</label>
-            <div className="row">{[['high', 'Alta'], ['medium', 'Media'], ['low', 'Baja']].map(([k, l]) => (
-              <button key={k} className={quality === k ? 'on' : ''} onClick={() => setQuality(k)}>{l}</button>))}</div>
-          </div>
-          <div className="grp">
             <label>Extras</label>
             <div className="row">
               <button className={sound ? 'on' : ''} onClick={() => setSound(!sound)}>{sound ? '🔊 Sonido' : '🔇 Sonido'}</button>
               <button className={preview ? 'on' : ''} onClick={() => setPreview(!preview)}>Vista previa de estados</button>
-              <button onClick={() => window.open('?casting', '_blank')}>Casting de personajes</button>
+              <button onClick={() => window.open('?casting', '_blank')}>Casting</button>
+              <button onClick={() => setGfx(true)}>⚙ Gráficos</button>
               <button onClick={() => setCredits(true)}>Créditos</button>
             </div>
           </div>
+          {preview && <div className="grp">
+            <label>Probar movimientos (solo diseño)</label>
+            <div className="row">{[['auto', 'Automático'], ['desk', 'A sus escritorios'], ['meeting', 'Reunión'], ['rest', 'Descanso']].map(([k, l]) => (
+              <button key={k} className={placeOverride === k ? 'on' : ''} onClick={() => setPlace(k)}>{l}</button>))}</div>
+          </div>}
         </nav>
       )}
+      {gfx && <GraphicsPanel onClose={() => setGfx(false)} />}
       {credits && <div className="credits" onClick={() => setCredits(false)}><div onClick={(e) => e.stopPropagation()}>
         <h3>Créditos de modelos 3D</h3>
         <p>Modelos GLB © Wayfair, LLC / Darmstadt Graphics Group GmbH / colaboradores, de <a href="https://github.com/KhronosGroup/glTF-Sample-Assets" target="_blank" rel="noreferrer">KhronosGroup/glTF-Sample-Assets</a>. Redimensionados y comprimidos.</p>

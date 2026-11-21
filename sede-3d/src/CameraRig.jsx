@@ -40,7 +40,7 @@ export default function CameraRig() {
   }, [camera]);
 
   // Salto a un preset de cámara
-  useEffect(() => { if (goto) anim.current = { pos: V(...goto.pos), target: V(...goto.target) }; }, [goto]);
+  useEffect(() => { if (goto) anim.current = { pos: V(...goto.pos), target: V(...goto.target), fov: goto.fov ?? 55 }; }, [goto]);
 
   // Cambio de modo
   useEffect(() => {
@@ -106,7 +106,8 @@ export default function CameraRig() {
     if (st.mode === 'orbit' && anim.current && c) {
       const k = 1 - Math.exp(-3.2 * dt), a = anim.current;
       camera.position.lerp(a.pos, k); c.target.lerp(a.target, k);
-      if (camera.position.distanceTo(a.pos) < 0.05 && c.target.distanceTo(a.target) < 0.05) anim.current = null;
+      if (Math.abs(camera.fov - a.fov) > 0.05) { camera.fov += (a.fov - camera.fov) * k; camera.updateProjectionMatrix(); }
+      if (camera.position.distanceTo(a.pos) < 0.05 && c.target.distanceTo(a.target) < 0.05) { camera.fov = a.fov; camera.updateProjectionMatrix(); anim.current = null; }
       c.update();
     }
 

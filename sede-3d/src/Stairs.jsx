@@ -13,7 +13,7 @@ export function Stairs() {
         return (
           <group key={i}>
             <mesh position={[0, top - 0.05, z]} material={M.black}><boxGeometry args={[w, 0.1, run + 0.01]} /></mesh>
-            <mesh position={[0, top - 0.1, z + run / 2]} material={i % 2 ? M.stripBV : M.stripBV2}><boxGeometry args={[w - 0.1, 0.045, 0.03]} /></mesh>
+            <mesh position={[0, top - 0.1, z + run / 2]} material={M['chase' + (i % 8)]}><boxGeometry args={[w - 0.1, 0.045, 0.03]} /></mesh>
           </group>
         );
       })}
@@ -23,7 +23,7 @@ export function Stairs() {
       {[-1, 1].map((s) => (
         <group key={s}>
           <mesh position={[s * (STAIR.x + 0.02), mid[1] + 0.55, mid[2]]} rotation={[ang, 0, 0]} material={M.glass}><boxGeometry args={[0.03, 1.05, len]} /></mesh>
-          <mesh position={[s * (STAIR.x + 0.02), mid[1] + 1.08, mid[2]]} rotation={[ang, 0, 0]} material={M.stripBV}><boxGeometry args={[0.07, 0.05, len]} /></mesh>
+          <mesh position={[s * (STAIR.x + 0.02), mid[1] + 1.08, mid[2]]} rotation={[ang, 0, 0]} material={M.neonBlue}><boxGeometry args={[0.07, 0.05, len]} /></mesh>
           <mesh position={[s * (STAIR.x + 0.02), mid[1] + 0.02, mid[2]]} rotation={[ang, 0, 0]} material={M.stripBV2}><boxGeometry args={[0.05, 0.04, len]} /></mesh>
         </group>
       ))}
