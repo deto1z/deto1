@@ -1,0 +1,37 @@
+:root { --blue:#1f6bff; --violet:#9b2bff; --bg:#05060f; --glass:rgba(8,10,28,.72); --line:rgba(90,120,255,.35); }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body, #root, .app { margin:0; width:100%; height:100%; background:var(--bg); overflow:hidden; font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif; color:#eaf0ff; }
+canvas { display:block; touch-action:none; }
+.brand { position:fixed; top:14px; left:16px; pointer-events:none; line-height:1; text-shadow:0 0 18px rgba(80,120,255,.8); }
+.brand b { font-size:26px; font-weight:900; letter-spacing:3px; background:linear-gradient(90deg,#2ee6ff,#4d7bff,#b45bff); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.brand span { display:block; font-size:12px; letter-spacing:9px; margin-top:4px; font-weight:700; }
+.brand small { display:block; margin-top:8px; font-size:11px; color:#8e9bd0; letter-spacing:.5px; }
+.dock { position:fixed; left:50%; bottom:46px; transform:translateX(-50%); display:flex; gap:14px; padding:10px 14px; background:var(--glass); border:1px solid var(--line); border-radius:14px; backdrop-filter:blur(10px); box-shadow:0 0 30px rgba(60,90,255,.25); max-width:calc(100vw - 20px); }
+.grp label { display:block; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#8e9bd0; margin:0 0 5px 2px; }
+.row { display:flex; gap:5px; }
+button { font:inherit; font-size:12.5px; color:#dfe7ff; background:rgba(30,40,100,.45); border:1px solid var(--line); border-radius:8px; padding:7px 10px; cursor:pointer; white-space:nowrap; transition:.15s; }
+button:hover { background:rgba(60,90,255,.45); box-shadow:0 0 12px rgba(80,120,255,.5); }
+button.on { background:linear-gradient(135deg,var(--blue),var(--violet)); border-color:transparent; color:#fff; box-shadow:0 0 14px rgba(120,80,255,.6); }
+.hint { position:fixed; bottom:12px; left:50%; transform:translateX(-50%); font-size:12px; color:#9aa6d8; text-align:center; width:max-content; max-width:calc(100vw - 24px); pointer-events:none; text-shadow:0 1px 4px #000; }
+.burger { display:none; position:fixed; top:12px; right:12px; width:42px; height:42px; font-size:18px; z-index:5; }
+.panel { position:fixed; top:14px; right:14px; width:320px; max-height:calc(100vh - 28px); overflow:auto; padding:18px; background:var(--glass); border:1px solid var(--c); border-radius:14px; backdrop-filter:blur(12px); box-shadow:0 0 28px color-mix(in srgb, var(--c) 45%, transparent); z-index:4; }
+.panel h2 { margin:0; color:var(--c); letter-spacing:2px; font-size:20px; text-shadow:0 0 14px var(--c); }
+.panel h3 { margin:14px 0 4px; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#8e9bd0; }
+.panel ul { margin:0; padding-left:18px; font-size:13px; line-height:1.5; }
+.role { margin:2px 0 8px; color:#cdd6ff; font-size:14px; }
+.status { font-size:12px; letter-spacing:1.5px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.status i { width:10px; height:10px; border-radius:50%; display:inline-block; }
+.muted { margin:0; color:#8890b8; font-size:13px; }
+.note { margin-top:14px; font-size:11px; color:#ffc531; border-top:1px solid var(--line); padding-top:10px; }
+.x { position:absolute; top:8px; right:8px; padding:2px 9px; font-size:18px; }
+.joy { position:fixed; left:22px; bottom:70px; width:110px; height:110px; border-radius:50%; background:rgba(30,50,140,.3); border:2px solid var(--line); touch-action:none; z-index:3; display:grid; place-items:center; }
+.knob { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--blue),var(--violet)); box-shadow:0 0 16px rgba(120,80,255,.7); pointer-events:none; }
+@media (max-width: 800px) {
+  .brand b { font-size:19px; } .brand span { font-size:9px; letter-spacing:6px; } .brand small { display:none; }
+  .burger { display:block; }
+  .dock { left:8px; right:8px; transform:none; bottom:34px; flex-direction:column; gap:8px; max-width:none; padding:8px; }
+  .row { overflow-x:auto; padding-bottom:2px; } .row::-webkit-scrollbar { display:none; }
+  .panel { top:auto; bottom:0; right:0; left:0; width:auto; max-height:46vh; border-radius:14px 14px 0 0; }
+  .hint { font-size:10.5px; bottom:8px; }
+  .joy { bottom:60px; }
+}
