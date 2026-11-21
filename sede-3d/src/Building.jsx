@@ -236,7 +236,7 @@ function Floor2() {
         </group>)}
         <mesh position={[12, y + 0.01, -7.6]} rotation={[-Math.PI / 2, 0, 0]}><planeGeometry args={[7.8, 8.8]} /><meshStandardMaterial color="#080818" metalness={0.5} roughness={0.5} /></mesh>
         <MeetingTable position={[12, y, -8]} />
-        <mesh position={[12, y + 1.5, -8]} material={M.holo}><sphereGeometry args={[0.5, 20, 14]} /></mesh>
+        <mesh position={[12, y + 1.45, -8]}><sphereGeometry args={[0.32, 20, 14]} /><meshBasicMaterial color={'#2ee6ff'} transparent opacity={0.07} depthWrite={false} blending={THREE.AdditiveBlending} /></mesh>
         <mesh position={[12, y + 0.85, -8]} material={M.neonBlue}><cylinderGeometry args={[0.3, 0.3, 0.02, 20]} /></mesh>
         <Screen w={6.4} h={2.9} res={256} draw={drawStats} fps={2} position={[12, y + 2.6, -11.72]} />
         <Strip position={[12, y + 4.95, -7.6]} size={[7.6, 0.05, 0.05]} />
